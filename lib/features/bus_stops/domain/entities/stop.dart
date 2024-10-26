@@ -9,5 +9,5 @@ class Stop extends Equatable {
   final LatLng postion;
 
   @override
-  List<Object?> get props => [id, name, postion];
+  List<Object?> get props => [id, name, postion.latitude, postion.longitude];
 }
