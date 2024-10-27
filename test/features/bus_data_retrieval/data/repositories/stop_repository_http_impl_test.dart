@@ -37,10 +37,23 @@ void main() {
           expected: const Err('Unable to fetch all stops. No data received')
         ),
         (status: 200, receivedJson: <()>[], expected: const Ok([])),
+        (status: 200, receivedJson: [null, 12, 'chrome'], expected: const Ok([])),
         (
           status: 200,
           receivedJson: [
             {'stopId': '170A', 'name': 'forest blocked', 'lat': -56.85, 'lng': 73.27},
+          ],
+          expected: const Ok(
+            [Stop(id: '170A', name: 'forest blocked', postion: LatLng(-56.85, 73.27))],
+          ),
+        ),
+        (
+          status: 200,
+          receivedJson: [
+            90,
+            {'stopId': '170A', 'name': 'forest blocked', 'lat': -56.85, 'lng': 73.27},
+            'bryan',
+            null,
           ],
           expected: const Ok(
             [Stop(id: '170A', name: 'forest blocked', postion: LatLng(-56.85, 73.27))],
