@@ -28,7 +28,8 @@ class StopRepositoryHttpImpl implements StopRepository {
           .andThen<Object>(_checkResponseBody)
           .andThen<List<Map<String, dynamic>>>(_parseResponseBody)
           .map<List<Stop>>(_parseAsStopIterable)
-          .mapErr<String>((String e) => 'Unable to fetch all stops. $e');
+          .mapErr<String>((String e) => 'Unable to fetch all stops. $e')
+          .inspectErr(_logger.warning);
 
   FutureResult<Response<Object?>, String> _makeHttpRequest() async => Ok<Response<Object?>, String>(
         await _dioClient.get<Object>(
