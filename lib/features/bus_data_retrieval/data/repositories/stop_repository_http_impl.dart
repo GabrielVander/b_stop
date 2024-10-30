@@ -79,8 +79,7 @@ class StopRepositoryHttpImpl implements StopRepository {
   Result<Map<String, dynamic>, String> _parseAsJson(dynamic element) => cast<Map<String, dynamic>>(element)
       .inspectErr((String e) => _logger.warning('Unable to parse element from list: $e. Skipping...'));
 
-  Iter<Stop> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) =>
-      jsonIter.map<Stop>(_parseAsStopEntity).inspect((e) => _logger.info(e.toString()));
+  Iter<Stop> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) => jsonIter.map<Stop>(_parseAsStopEntity);
 
   Stop _parseAsStopEntity(Map<String, dynamic> json) => StopHttpModel.fromJson(json).toEntity();
 }
