@@ -1,20 +1,17 @@
 import 'package:b_stop/features/bus_data_retrieval/data/repositories/stop_repository_http_impl.dart';
 import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
 import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:http_mock_adapter/http_mock_adapter.dart';
-import 'package:http_mock_adapter/src/handlers/request_handler.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:rust_core/rust_core.dart';
+import 'package:dio/dio.dart' show Dio;
+import 'package:flutter_test/flutter_test.dart' show equals, expect, group, test;
+import 'package:http_mock_adapter/http_mock_adapter.dart' show DioAdapter;
+import 'package:latlong2/latlong.dart' show LatLng;
+import 'package:pretty_dio_logger/pretty_dio_logger.dart' show PrettyDioLogger;
+import 'package:rust_core/rust_core.dart' show Err, Iter, Ok, Result;
 
 void main() {
   group('fetchAll', () {
     group('should return expected', () {
-      for (final testCase
-          in <({int status, dynamic receivedJson, Result<List<Stop>, String> expected})>[
+      for (final testCase in <({int status, dynamic receivedJson, Result<Iterable<Stop>, String> expected})>[
         (
           status: 404,
           receivedJson: <String, dynamic>{},
@@ -31,32 +28,50 @@ void main() {
               'Vulputate condimentum efficitur nibh est pellentesque massa neque lectus eros quisque nascetur ligula laoreet sed natoque facilisis eleifend odio massa nisl sit ac eu suspendisse, integer dapibus. Nunc nibh ac metus non et sit varius urna dui faucibus proin, congue pellentesque magna, suspendisse libero tristique tempor lorem nisi sed nunc et imperdiet, aliquam dignissim gravida leo turpis. Nulla nam nibh suscipit sed platea ipsum magna arcu porttitor amet enim libero ac lectus ultricies, tempor dolor dapibus tellus ornare sed, neque lectus metus sed sem. Vitae turpis dictumst pellentesque dui vel imperdiet tortor pulvinar auctor condimentum velit nunc arcu lorem suspendisse.',
           expected: const Err('Unable to fetch all stops. Unexpected structure')
         ),
-        (
-          status: 200,
-          receivedJson: null,
-          expected: const Err('Unable to fetch all stops. No data received')
-        ),
-        (status: 200, receivedJson: <()>[], expected: const Ok([])),
-        (status: 200, receivedJson: [null, 12, 'chrome'], expected: const Ok([])),
+        (status: 200, receivedJson: null, expected: const Err('Unable to fetch all stops. No data received')),
+        (status: 200, receivedJson: <()>[], expected: const Ok(<Stop>[])),
+        (status: 200, receivedJson: [null, 12, 'chrome'], expected: const Ok(<Stop>[])),
         (
           status: 200,
           receivedJson: [
-            {'stopId': '170A', 'name': 'forest blocked', 'lat': -56.85, 'lng': 73.27},
+            {
+              'stopId': '170A',
+              'name': 'forest blocked',
+              'lat': -56.85,
+              'lng': 73.27,
+            },
           ],
           expected: const Ok(
-            [Stop(id: '170A', name: 'forest blocked', postion: LatLng(-56.85, 73.27))],
+            [
+              Stop(
+                id: '170A',
+                name: 'forest blocked',
+                postion: LatLng(-56.85, 73.27),
+              ),
+            ],
           ),
         ),
         (
           status: 200,
           receivedJson: [
             90,
-            {'stopId': '170A', 'name': 'forest blocked', 'lat': -56.85, 'lng': 73.27},
+            {
+              'stopId': '170A',
+              'name': 'forest blocked',
+              'lat': -56.85,
+              'lng': 73.27,
+            },
             'bryan',
             null,
           ],
           expected: const Ok(
-            [Stop(id: '170A', name: 'forest blocked', postion: LatLng(-56.85, 73.27))],
+            [
+              Stop(
+                id: '170A',
+                name: 'forest blocked',
+                postion: LatLng(-56.85, 73.27),
+              ),
+            ],
           ),
         ),
       ]) {
@@ -70,25 +85,23 @@ void main() {
             projectId: '5',
             projectHash: '3B722788-575D-4634-AD7C-F7E38B9DCADC',
           );
-          final HttpStopsEndpoint stopsEndpoint =
-              HttpStopsEndpoint(httpBaseInfo: httpBaseInfo, endpoint: '/notices');
+          final HttpStopsEndpoint stopsEndpoint = HttpStopsEndpoint(
+            httpBaseInfo: httpBaseInfo,
+            endpoint: '/notices',
+          );
 
           final StopRepository repository = StopRepositoryHttpImpl(dio, stopsEndpoint);
 
           dioAdapter.onGet(
             stopsEndpoint.buildFullUrl(),
             queryParameters: stopsEndpoint.buildQueryParameters(),
-            (MockServer server) => server.reply(status, testCase.receivedJson),
+            (server) => server.reply(status, receivedJson),
           );
 
-          final Result<List<Stop>, String> result = await repository.fetchAll();
+          final Result<Iter<Stop>, String> result = await repository.fetchAll();
 
           expect(result.isOk(), expected.isOk());
-          expected.match<void>(
-            ok: (List<Stop> expectedList) =>
-                expect(listEquals<Stop>(result.unwrap(), expectedList), true),
-            err: (String expectedErr) => expect(result.unwrapErr(), expectedErr),
-          );
+          expect(result.toString(), equals(expected.map(Iter.fromIterable).toString()));
         });
       }
     });
