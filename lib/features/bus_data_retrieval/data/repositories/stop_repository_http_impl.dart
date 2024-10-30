@@ -5,7 +5,8 @@ import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.d
 import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
 import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
 import 'package:dio/dio.dart' show Dio, Options, Response;
-import 'package:rust_core/rust_core.dart' show Err, FutureResult, FutureResultExtension, Ok, Result;
+import 'package:rust_core/rust_core.dart'
+    show Err, FutureResult, FutureResultExtension, Iter, IterableExtension, Ok, Result;
 
 class StopRepositoryHttpImpl implements StopRepository {
   StopRepositoryHttpImpl(
@@ -19,15 +20,16 @@ class StopRepositoryHttpImpl implements StopRepository {
   final HttpStopsEndpoint _stopsEndpoint;
 
   @override
-  FutureResult<List<Stop>, String> fetchAll() async =>
-      FutureResult<String, String>.value(const Ok<String, String>('Fetching all stops...'))
+  FutureResult<Iter<Stop>, String> fetchAll() async => FutureResult<String, String>.value(
+        const Ok<String, String>('Fetching all stops...'),
+      )
           .inspect(_logger.info)
           .andThen<Response<Object?>>((String _) => _makeHttpRequest())
           .andThen<Response<Object?>>(_checkResponseStatus)
           .map<Object?>(_retrieveResponseBody)
           .andThen<Object>(_checkResponseBody)
-          .andThen<List<Map<String, dynamic>>>(_parseResponseBody)
-          .map<List<Stop>>(_parseAsStopIterable)
+          .andThen<Iter<Map<String, dynamic>>>(_parseResponseBody)
+          .map<Iter<Stop>>(_parseAsStopIterable)
           .mapErr<String>((String e) => 'Unable to fetch all stops. $e')
           .inspectErr(_logger.warning);
 
@@ -37,7 +39,9 @@ class StopRepositoryHttpImpl implements StopRepository {
           queryParameters: _stopsEndpoint.buildQueryParameters(),
           options: Options(validateStatus: (int? _) => true),
         ),
-      ).inspect((Response<Object?> r) => _logger.debug('Received response: $r'));
+      ).inspect(
+        (Response<Object?> r) => _logger.debug('Received response: $r'),
+      );
 
   Result<Response<Object?>, String> _checkResponseStatus(Response<Object?> response) {
     if (response.statusCode == 200) {
@@ -59,35 +63,34 @@ class StopRepositoryHttpImpl implements StopRepository {
     return const Err<Object, String>('No data received');
   }
 
-  Result<List<Map<String, dynamic>>, String> _parseResponseBody(Object body) =>
-      _parseAsIterable(body).map<List<Map<String, dynamic>>>(_parseAsJsonIterable);
+  Result<Iter<Map<String, dynamic>>, String> _parseResponseBody(Object body) =>
+      _parseAsIterable(body).map<Iter<Map<String, dynamic>>>(_parseAsJsonIterable);
 
-  Result<List<dynamic>, String> _parseAsIterable(Object body) => cast<List<dynamic>>(body)
+  Result<Iter<dynamic>, String> _parseAsIterable(Object body) => cast<List<dynamic>>(body)
+      .map<Iter<dynamic>>((List<dynamic> i) => i.iter())
       .inspectErr((String e) => _logger.error('Unable to parse response body as iterable: $e'))
       .mapErr<String>((String _) => 'Unexpected structure');
 
-  List<Map<String, dynamic>> _parseAsJsonIterable(List<dynamic> iterable) => iterable
+  Iter<Map<String, dynamic>> _parseAsJsonIterable(Iter<dynamic> iterable) => iterable
       .map<Result<Map<String, dynamic>, String>>(_parseAsJson)
-      .toList()
       .where((Result<Map<String, dynamic>, String> parseResult) => parseResult.isOk())
-      .map<Map<String, dynamic>>(
-        (Result<Map<String, dynamic>, String> parseResult) => parseResult.unwrap(),
-      )
-      .toList();
+      .map<Map<String, dynamic>>((Result<Map<String, dynamic>, String> parseResult) => parseResult.unwrap());
 
-  Result<Map<String, dynamic>, String> _parseAsJson(dynamic element) =>
-      cast<Map<String, dynamic>>(element).inspectErr(
-        (String e) => _logger.warning('Unable to parse element from list: $e. Skipping...'),
-      );
+  Result<Map<String, dynamic>, String> _parseAsJson(dynamic element) => cast<Map<String, dynamic>>(element)
+      .inspectErr((String e) => _logger.warning('Unable to parse element from list: $e. Skipping...'));
 
-  List<Stop> _parseAsStopIterable(List<Map<String, dynamic>> jsonIter) =>
-      jsonIter.map<Stop>(_parseAsStopEntity).toList();
+  Iter<Stop> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) =>
+      jsonIter.map<Stop>(_parseAsStopEntity).inspect((e) => _logger.info(e.toString()));
 
   Stop _parseAsStopEntity(Map<String, dynamic> json) => StopHttpModel.fromJson(json).toEntity();
 }
 
 final class HttpBaseInformation {
-  HttpBaseInformation({required this.baseUrl, required this.projectId, required this.projectHash});
+  HttpBaseInformation({
+    required this.baseUrl,
+    required this.projectId,
+    required this.projectHash,
+  });
 
   final String baseUrl;
   final String projectId;

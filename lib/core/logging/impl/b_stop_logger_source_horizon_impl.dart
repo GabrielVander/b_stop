@@ -1,5 +1,5 @@
-import 'dart:convert';
-import 'dart:math';
+import 'dart:convert' show JsonEncoder;
+import 'dart:math' show min;
 
 import 'package:b_stop/core/logging/b_stop_logger.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
@@ -14,6 +14,7 @@ import 'package:logger/logger.dart'
         LogPrinter,
         Logger,
         PrettyPrinter;
+import 'package:rust_core/rust_core.dart' show Iter;
 
 class BStopLoggerSourceHorizonImpl implements BStopLogger {
   final Logger _logger = Logger(
