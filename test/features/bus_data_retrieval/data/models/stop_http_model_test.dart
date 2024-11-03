@@ -1,7 +1,6 @@
 import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.dart' show StopHttpModel;
-import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart' show StopOutput;
+import 'package:b_stop/features/bus_stops/domain/entities/stop.dart' show Stop;
 import 'package:flutter_test/flutter_test.dart' show expect, group, test;
-import 'package:latlong2/latlong.dart' show LatLng;
 
 void main() {
   group('fromJson', () {
@@ -44,7 +43,7 @@ void main() {
   });
 
   group('toEntity', () {
-    for (final ({StopOutput entity, StopHttpModel model}) testCase in <({StopHttpModel model, StopOutput entity})>[
+    for (final ({Stop entity, StopHttpModel model}) testCase in <({StopHttpModel model, Stop entity})>[
       (
         model: const StopHttpModel(
           stopId: 'BEF7F24D-A781-4AB3-9E16-9E7E09503671',
@@ -52,16 +51,17 @@ void main() {
           lat: 94.64,
           lng: 18.35,
         ),
-        entity: const StopOutput(
+        entity: const Stop(
           id: 'BEF7F24D-A781-4AB3-9E16-9E7E09503671',
           name: 'obtained',
-          postion: LatLng(94.64, 18.35),
+          lat: 94.64,
+          lon: 18.35,
         )
       ),
     ]) {
       final (:model, :entity) = testCase;
       test('given $model then should return $entity', () {
-        final StopOutput result = model.toEntity();
+        final Stop result = model.toEntity();
 
         expect(result, entity);
       });

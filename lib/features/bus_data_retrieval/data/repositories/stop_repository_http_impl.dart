@@ -2,7 +2,8 @@ import 'package:b_stop/core/logging/b_stop_logger.dart' show BStopLogger;
 import 'package:b_stop/core/logging/b_stop_logger_factory.dart' show BStopLoggerFactory;
 import 'package:b_stop/core/utils/cast.dart' show cast;
 import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.dart' show StopHttpModel;
-import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart' show StopOutput;
+import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart' show Stop;
+import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
 import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart' show StopRepository;
 import 'package:dio/dio.dart' show Dio, Options, Response;
 import 'package:rust_core/rust_core.dart'
@@ -20,7 +21,7 @@ class StopRepositoryHttpImpl implements StopRepository {
   final HttpStopsEndpoint _stopsEndpoint;
 
   @override
-  FutureResult<Iter<StopOutput>, String> fetchAll() async => FutureResult.value(const Ok('Fetching all stops...'))
+  FutureResult<Iter<Stop>, String> fetchAll() async => FutureResult.value(const Ok('Fetching all stops...'))
       .inspect(_logger.info)
       .andThen((_) => _makeHttpRequest())
       .andThen(_checkResponseStatus)
@@ -73,9 +74,9 @@ class StopRepositoryHttpImpl implements StopRepository {
   Result<Map<String, dynamic>, String> _parseAsJson(dynamic element) => cast<Map<String, dynamic>>(element)
       .inspectErr((e) => _logger.warning('Unable to parse element from list: $e. Skipping...'));
 
-  Iter<StopOutput> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) => jsonIter.map(_parseAsStopEntity);
+  Iter<Stop> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) => jsonIter.map(_parseAsStopEntity);
 
-  StopOutput _parseAsStopEntity(Map<String, dynamic> json) => StopHttpModel.fromJson(json).toEntity();
+  Stop _parseAsStopEntity(Map<String, dynamic> json) => StopHttpModel.fromJson(json).toEntity();
 }
 
 final class HttpBaseInformation {
