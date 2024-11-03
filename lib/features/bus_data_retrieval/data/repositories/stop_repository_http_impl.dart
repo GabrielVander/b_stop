@@ -1,9 +1,9 @@
-import 'package:b_stop/core/logging/b_stop_logger.dart';
-import 'package:b_stop/core/logging/b_stop_logger_factory.dart';
-import 'package:b_stop/core/utils/cast.dart';
-import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.dart';
-import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
-import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
+import 'package:b_stop/core/logging/b_stop_logger.dart' show BStopLogger;
+import 'package:b_stop/core/logging/b_stop_logger_factory.dart' show BStopLoggerFactory;
+import 'package:b_stop/core/utils/cast.dart' show cast;
+import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.dart' show StopHttpModel;
+import 'package:b_stop/features/bus_stops/domain/entities/stop.dart' show Stop;
+import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart' show StopRepository;
 import 'package:dio/dio.dart' show Dio, Options, Response;
 import 'package:rust_core/rust_core.dart'
     show Err, FutureResult, FutureResultExtension, Iter, IterableExtension, Ok, Result;
@@ -20,66 +20,60 @@ class StopRepositoryHttpImpl implements StopRepository {
   final HttpStopsEndpoint _stopsEndpoint;
 
   @override
-  FutureResult<Iter<Stop>, String> fetchAll() async => FutureResult<String, String>.value(
-        const Ok<String, String>('Fetching all stops...'),
-      )
-          .inspect(_logger.info)
-          .andThen<Response<Object?>>((String _) => _makeHttpRequest())
-          .andThen<Response<Object?>>(_checkResponseStatus)
-          .map<Object?>(_retrieveResponseBody)
-          .andThen<Object>(_checkResponseBody)
-          .andThen<Iter<Map<String, dynamic>>>(_parseResponseBody)
-          .map<Iter<Stop>>(_parseAsStopIterable)
-          .mapErr<String>((String e) => 'Unable to fetch all stops. $e')
-          .inspectErr(_logger.warning);
+  FutureResult<Iter<Stop>, String> fetchAll() async => FutureResult.value(const Ok('Fetching all stops...'))
+      .inspect(_logger.info)
+      .andThen((_) => _makeHttpRequest())
+      .andThen(_checkResponseStatus)
+      .map(_retrieveResponseBody)
+      .andThen(_checkResponseBody)
+      .andThen(_parseResponseBody)
+      .map(_parseAsStopIterable)
+      .mapErr((e) => 'Unable to fetch all stops. $e')
+      .inspectErr(_logger.warning);
 
   FutureResult<Response<Object?>, String> _makeHttpRequest() async => Ok<Response<Object?>, String>(
         await _dioClient.get<Object>(
           _stopsEndpoint.buildFullUrl(),
           queryParameters: _stopsEndpoint.buildQueryParameters(),
-          options: Options(validateStatus: (int? _) => true),
+          options: Options(validateStatus: (_) => true),
         ),
-      ).inspect(
-        (Response<Object?> r) => _logger.debug('Received response: $r'),
-      );
+      ).inspect((r) => _logger.debug('Received response: $r'));
 
   Result<Response<Object?>, String> _checkResponseStatus(Response<Object?> response) {
     if (response.statusCode == 200) {
-      return Ok<Response<Object?>, String>(response);
+      return Ok(response);
     }
 
     _logger.error('Received an unexpected response code: ${response.statusCode}');
-    return const Err<Response<Object?>, String>('Unexpected response code');
+    return const Err('Unexpected response code');
   }
 
   Object? _retrieveResponseBody(Response<Object?> response) => response.data;
 
   Result<Object, String> _checkResponseBody(Object? data) {
     if (data != null) {
-      return Ok<Object, String>(data);
+      return Ok(data);
     }
 
     _logger.error('Received null response body');
-    return const Err<Object, String>('No data received');
+    return const Err('No data received');
   }
 
   Result<Iter<Map<String, dynamic>>, String> _parseResponseBody(Object body) =>
-      _parseAsIterable(body).map<Iter<Map<String, dynamic>>>(_parseAsJsonIterable);
+      _parseAsIterable(body).map(_parseAsJsonIterable);
 
   Result<Iter<dynamic>, String> _parseAsIterable(Object body) => cast<List<dynamic>>(body)
-      .map<Iter<dynamic>>((List<dynamic> i) => i.iter())
-      .inspectErr((String e) => _logger.error('Unable to parse response body as iterable: $e'))
-      .mapErr<String>((String _) => 'Unexpected structure');
+      .map((i) => i.iter())
+      .inspectErr((e) => _logger.error('Unable to parse response body as iterable: $e'))
+      .mapErr((_) => 'Unexpected structure');
 
-  Iter<Map<String, dynamic>> _parseAsJsonIterable(Iter<dynamic> iterable) => iterable
-      .map<Result<Map<String, dynamic>, String>>(_parseAsJson)
-      .where((Result<Map<String, dynamic>, String> parseResult) => parseResult.isOk())
-      .map<Map<String, dynamic>>((Result<Map<String, dynamic>, String> parseResult) => parseResult.unwrap());
+  Iter<Map<String, dynamic>> _parseAsJsonIterable(Iter<dynamic> iterable) =>
+      iterable.map(_parseAsJson).where((parseResult) => parseResult.isOk()).map((parseResult) => parseResult.unwrap());
 
   Result<Map<String, dynamic>, String> _parseAsJson(dynamic element) => cast<Map<String, dynamic>>(element)
-      .inspectErr((String e) => _logger.warning('Unable to parse element from list: $e. Skipping...'));
+      .inspectErr((e) => _logger.warning('Unable to parse element from list: $e. Skipping...'));
 
-  Iter<Stop> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) => jsonIter.map<Stop>(_parseAsStopEntity);
+  Iter<Stop> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) => jsonIter.map(_parseAsStopEntity);
 
   Stop _parseAsStopEntity(Map<String, dynamic> json) => StopHttpModel.fromJson(json).toEntity();
 }
