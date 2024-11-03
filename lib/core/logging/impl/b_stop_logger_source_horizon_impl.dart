@@ -1,20 +1,10 @@
 import 'dart:convert' show JsonEncoder;
 import 'dart:math' show min;
 
-import 'package:b_stop/core/logging/b_stop_logger.dart';
+import 'package:b_stop/core/logging/b_stop_logger.dart' show BStopLogger;
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:logger/logger.dart'
-    show
-        AnsiColor,
-        DateTimeFormat,
-        HybridPrinter,
-        Level,
-        LogEvent,
-        LogFilter,
-        LogPrinter,
-        Logger,
-        PrettyPrinter;
-import 'package:rust_core/rust_core.dart' show Iter;
+    show AnsiColor, DateTimeFormat, HybridPrinter, Level, LogEvent, LogFilter, LogPrinter, Logger, PrettyPrinter;
 
 class BStopLoggerSourceHorizonImpl implements BStopLogger {
   final Logger _logger = Logger(
@@ -61,9 +51,7 @@ class _DynamicFilter extends LogFilter {
   Level getMinimumLogLevel() {
     final int value = _getMinimumLogLevelUpToInfo();
 
-    return kReleaseMode
-        ? Level.values.firstWhere((Level element) => element.value == value)
-        : level!;
+    return kReleaseMode ? Level.values.firstWhere((Level element) => element.value == value) : level!;
   }
 
   int _getMinimumLogLevelUpToInfo() => min<int>(level!.value, Level.info.value);
@@ -105,8 +93,7 @@ class _SimplePrinterWithFullPrefixesAndFullColor extends LogPrinter {
     ];
   }
 
-  String Function(String) _getMessageParser(Level level) =>
-      _colors ? _colorFor(level).call : (String msg) => msg;
+  String Function(String) _getMessageParser(Level level) => _colors ? _colorFor(level).call : (String msg) => msg;
 
   String _prefixFor(Level level) => levelPrefixes[level]!;
 
