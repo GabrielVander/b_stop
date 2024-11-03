@@ -1,6 +1,7 @@
-import 'package:b_stop/features/bus_data_retrieval/data/repositories/stop_repository_http_impl.dart';
-import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
-import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
+import 'package:b_stop/features/bus_data_retrieval/data/repositories/stop_repository_http_impl.dart'
+    show HttpBaseInformation, HttpStopsEndpoint, StopRepositoryHttpImpl;
+import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart' show StopOutput;
+import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart' show StopRepository;
 import 'package:dio/dio.dart' show Dio;
 import 'package:flutter_test/flutter_test.dart' show equals, expect, group, test;
 import 'package:http_mock_adapter/http_mock_adapter.dart' show DioAdapter;
@@ -11,7 +12,7 @@ import 'package:rust_core/rust_core.dart' show Err, Iter, Ok, Result;
 void main() {
   group('fetchAll', () {
     group('should return expected', () {
-      for (final testCase in <({int status, dynamic receivedJson, Result<Iterable<Stop>, String> expected})>[
+      for (final testCase in <({int status, dynamic receivedJson, Result<Iterable<StopOutput>, String> expected})>[
         (
           status: 404,
           receivedJson: <String, dynamic>{},
@@ -29,8 +30,8 @@ void main() {
           expected: const Err('Unable to fetch all stops. Unexpected structure')
         ),
         (status: 200, receivedJson: null, expected: const Err('Unable to fetch all stops. No data received')),
-        (status: 200, receivedJson: <()>[], expected: const Ok(<Stop>[])),
-        (status: 200, receivedJson: [null, 12, 'chrome'], expected: const Ok(<Stop>[])),
+        (status: 200, receivedJson: <()>[], expected: const Ok(<StopOutput>[])),
+        (status: 200, receivedJson: [null, 12, 'chrome'], expected: const Ok(<StopOutput>[])),
         (
           status: 200,
           receivedJson: [
@@ -43,7 +44,7 @@ void main() {
           ],
           expected: const Ok(
             [
-              Stop(
+              StopOutput(
                 id: '170A',
                 name: 'forest blocked',
                 postion: LatLng(-56.85, 73.27),
@@ -66,7 +67,7 @@ void main() {
           ],
           expected: const Ok(
             [
-              Stop(
+              StopOutput(
                 id: '170A',
                 name: 'forest blocked',
                 postion: LatLng(-56.85, 73.27),
@@ -98,7 +99,7 @@ void main() {
             (server) => server.reply(status, receivedJson),
           );
 
-          final Result<Iter<Stop>, String> result = await repository.fetchAll();
+          final Result<Iter<StopOutput>, String> result = await repository.fetchAll();
 
           expect(result.isOk(), expected.isOk());
           expect(result.toString(), equals(expected.map(Iter.fromIterable).toString()));

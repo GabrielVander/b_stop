@@ -1,6 +1,6 @@
-import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
-import 'package:equatable/equatable.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart' show StopOutput;
+import 'package:equatable/equatable.dart' show Equatable;
+import 'package:latlong2/latlong.dart' show LatLng;
 
 final class StopHttpModel extends Equatable {
   const StopHttpModel({
@@ -27,5 +27,5 @@ final class StopHttpModel extends Equatable {
   @override
   List<Object?> get props => [stopId, name, lat, lng];
 
-  Stop toEntity() => Stop(id: stopId, name: name, postion: LatLng(lat, lng));
+  StopOutput toEntity() => StopOutput(id: stopId, name: name, postion: LatLng(lat, lng));
 }
