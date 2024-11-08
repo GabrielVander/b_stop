@@ -1,42 +1,65 @@
-import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart';
+import 'package:b_stop/core/logging/b_stop_logger.dart' show BStopLogger;
+import 'package:b_stop/core/logging/b_stop_logger_factory.dart' show BStopLoggerFactory;
+import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart' show StopOutput;
 import 'package:b_stop/features/bus_stops/domain/use_cases/get_all_bus_stops_use_case.dart' show GetAllBusStopsUseCase;
 import 'package:equatable/equatable.dart' show Equatable;
 import 'package:flutter_bloc/flutter_bloc.dart' show Cubit;
 import 'package:latlong2/latlong.dart' show LatLng;
+import 'package:rust_core/rust_core.dart';
 
 class StopsDisplayCubit extends Cubit<StopsDisplayState> {
   StopsDisplayCubit({required GetAllBusStopsUseCase getAllBusStopsUseCase})
       : _getAllBusStopsUseCase = getAllBusStopsUseCase,
         super(StopsDisplayInitialLoadingState());
 
+  final BStopLogger _logger = BStopLoggerFactory.standard();
   final GetAllBusStopsUseCase _getAllBusStopsUseCase;
 
   Future<void> loadStops() async {
+    _logger.info('Loading stops...');
     emit(StopsDisplayLoadingState());
 
-    (await _getAllBusStopsUseCase.call())
-        .inspectErr((_) => emit(StopsDisplayFailedState(errorMessage: 'Unable to display stops')))
-        .map((stops) => stops.toList())
-        .inspect(
-          (stops) => stops.isEmpty
-              ? emit(StopsDisplayNoStopsState())
-              : emit(StopsDisplayLoadedState(stops: stops.map(StopViewModel.fromOutput).toList())),
-        );
+    final busStopsResult = await _getBusStops();
+
+    switch (busStopsResult) {
+      case Err():
+        emit(StopsDisplayFailedState(errorMessage: 'Unable to display stops'));
+      case Ok(:final ok):
+        _processStops(ok);
+    }
   }
+
+  void _processStops(List<StopOutput> ok) {
+    _logger.info('Processing ${ok.length} stops...');
+
+    if (ok.isEmpty) {
+      _logger.info('No stops retrieved');
+      return emit(StopsDisplayNoStopsState());
+    }
+
+    final stopViewModels = _parseStops(ok);
+    _logger.info('Stops loaded');
+    return emit(StopsDisplayLoadedState(stops: stopViewModels));
+  }
+
+  List<StopViewModel> _parseStops(List<StopOutput> ok) => ok.map(StopViewModel.fromOutput).toList();
+
+  Future<Result<List<StopOutput>, String>> _getBusStops() async =>
+      (await _getAllBusStopsUseCase.call()).map((s) => s.toList()).inspectErr(_logger.warning);
 }
 
 final class StopViewModel extends Equatable {
-  const StopViewModel({required this.id, required this.displayText, required this.coordinates});
+  const StopViewModel({required this.id, required this.tooltipText, required this.point});
 
   factory StopViewModel.fromOutput(StopOutput output) =>
-      StopViewModel(id: output.id, displayText: output.name, coordinates: output.postion);
+      StopViewModel(id: output.id, tooltipText: output.name, point: output.postion);
 
   final String id;
-  final String displayText;
-  final LatLng coordinates;
+  final String tooltipText;
+  final LatLng point;
 
   @override
-  List<Object?> get props => [id, displayText, coordinates];
+  List<Object?> get props => [id, tooltipText, point];
 }
 
 sealed class StopsDisplayState extends Equatable {}
