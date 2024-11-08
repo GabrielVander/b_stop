@@ -68,18 +68,18 @@ void main() {
       final expectedViewModels = [
         const StopViewModel(
           id: 'B17009F4-ACC6-46D2-8E26-C3409D62D81C',
-          displayText: 'cooper',
-          coordinates: LatLng(99.62, -97.70),
+          tooltipText: 'cooper',
+          point: LatLng(99.62, -97.70),
         ),
         const StopViewModel(
           id: '5DC37DDE-6461-40FA-B6E2-F45BBF43CA95',
-          displayText: 'cloth',
-          coordinates: LatLng(-12.65, 57.45),
+          tooltipText: 'cloth',
+          point: LatLng(-12.65, 57.45),
         ),
         const StopViewModel(
           id: '839A2447-7146-4587-B146-A849371004FC',
-          displayText: 'charge',
-          coordinates: LatLng(75.40, -78.74),
+          tooltipText: 'charge',
+          point: LatLng(75.40, -78.74),
         ),
       ];
 
