@@ -1,28 +1,29 @@
-import 'package:b_stop/features/bus_stops/domain/entities/stop.dart' show Stop;
-import 'package:equatable/equatable.dart' show Equatable;
+import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
+import 'package:json/json.dart';
 
-final class StopHttpModel extends Equatable {
+@JsonCodable()
+final class StopHttpModel {
   const StopHttpModel({
+    required this.stopLat,
+    required this.distance,
+    required this.stopLon,
     required this.stopId,
-    required this.name,
-    required this.lat,
-    required this.lng,
+    required this.label,
+    required this.stopName,
+    this.stopCode,
+    this.street,
+    this.streetNumber,
   });
 
-  factory StopHttpModel.fromJson(Map<String, dynamic> json) => StopHttpModel(
-        stopId: json['stopId'] as String,
-        name: json['label'] as String,
-        lat: json['stopLat'] as double,
-        lng: json['stopLon'] as double,
-      );
-
+  final String? stopCode;
+  final double stopLat;
+  final int distance;
+  final String? street;
+  final double stopLon;
+  final String? streetNumber;
   final String stopId;
-  final String name;
-  final double lat;
-  final double lng;
+  final String label;
+  final String stopName;
 
-  @override
-  List<Object?> get props => [stopId, name, lat, lng];
-
-  Stop toEntity() => Stop(id: stopId, name: name, lat: lat, lon: lng);
+  Stop toEntity() => Stop(id: stopId, name: label, lat: stopLat, lon: stopLon);
 }
