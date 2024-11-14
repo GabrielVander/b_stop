@@ -82,21 +82,12 @@ void main() {
         test('given $status response with $receivedJson then should return $expected', () async {
           final Dio dio = _buildDioClient();
           final DioAdapter dioAdapter = DioAdapter(dio: dio);
-          final HttpBaseInformation httpBaseInfo = HttpBaseInformation(
-            baseUrl: 'http://mandate.org',
-            projectId: '5',
-            projectHash: '3B722788-575D-4634-AD7C-F7E38B9DCADC',
-          );
-          final HttpStopsEndpoint stopsEndpoint = HttpStopsEndpoint(
-            httpBaseInfo: httpBaseInfo,
-            endpoint: '/notices',
-          );
+          final HttpStopsEndpoint stopsEndpoint = HttpStopsEndpoint(url: 'https://consumer.gov/notices');
 
           final StopRepository repository = StopRepositoryHttpImpl(dio, stopsEndpoint);
 
           dioAdapter.onGet(
-            stopsEndpoint.buildFullUrl(),
-            queryParameters: stopsEndpoint.buildQueryParameters(),
+            stopsEndpoint.url,
             (server) => server.reply(status, receivedJson),
           );
 
