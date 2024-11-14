@@ -8,9 +8,9 @@ void main() {
       (
         json: {
           'stopId': '122EDA3E-EE10-400E-BFE5-80B11DEA8802',
-          'name': 'grace',
-          'lat': 66.13,
-          'lng': -5.99,
+          'label': 'grace',
+          'stopLat': 66.13,
+          'stopLon': -5.99,
         },
         expected: const StopHttpModel(
           stopId: '122EDA3E-EE10-400E-BFE5-80B11DEA8802',
@@ -22,9 +22,9 @@ void main() {
       (
         json: {
           'stopId': '819FC51E-FA0A-401C-969A-D09FCCCE7875',
-          'name': 'perform',
-          'lat': -92.76,
-          'lng': 69.92,
+          'label': 'perform',
+          'stopLat': -92.76,
+          'stopLon': 69.92,
         },
         expected: const StopHttpModel(
           stopId: '819FC51E-FA0A-401C-969A-D09FCCCE7875',

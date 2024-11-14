@@ -36,9 +36,9 @@ void main() {
           receivedJson: [
             {
               'stopId': '170A',
-              'name': 'forest blocked',
-              'lat': -56.85,
-              'lng': 73.27,
+              'label': 'forest blocked',
+              'stopLat': -56.85,
+              'stopLon': 73.27,
             },
           ],
           expected: const Ok(
@@ -58,9 +58,9 @@ void main() {
             90,
             {
               'stopId': '170A',
-              'name': 'forest blocked',
-              'lat': -56.85,
-              'lng': 73.27,
+              'label': 'forest blocked',
+              'stopLat': -56.85,
+              'stopLon': 73.27,
             },
             'bryan',
             null,

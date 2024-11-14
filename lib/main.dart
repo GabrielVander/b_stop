@@ -12,15 +12,7 @@ final Dio dioClient = Dio()..interceptors.add(LogInterceptor());
 Future<void> main() async {
   await dotenv.load();
 
-  final HttpBaseInformation httpBaseInformation = HttpBaseInformation(
-    baseUrl: dotenv.get('HTTP_BASE_URL'),
-    projectId: dotenv.get('HTTP_PROJECT_ID'),
-    projectHash: dotenv.get('HTTP_PROJECT_HASH'),
-  );
-  final HttpStopsEndpoint stopsEndpoint = HttpStopsEndpoint(
-    httpBaseInfo: httpBaseInformation,
-    endpoint: dotenv.get('HTTP_STOPS_ENDPOINT'),
-  );
+  final HttpStopsEndpoint stopsEndpoint = HttpStopsEndpoint(url: dotenv.get('HTTP_STOPS_URL'));
   final StopRepository stopRepository = StopRepositoryHttpImpl(dioClient, stopsEndpoint);
   final GetAllBusStopsUseCase getAllBusStopsUseCase = GetAllBusStopsUseCase(stopRepository: stopRepository);
   final StopsDisplayCubit stopDisplayCubit = StopsDisplayCubit(getAllBusStopsUseCase: getAllBusStopsUseCase);
