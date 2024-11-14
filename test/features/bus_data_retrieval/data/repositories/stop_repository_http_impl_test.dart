@@ -1,12 +1,11 @@
-import 'package:b_stop/features/bus_data_retrieval/data/repositories/stop_repository_http_impl.dart'
-    show HttpBaseInformation, HttpStopsEndpoint, StopRepositoryHttpImpl;
-import 'package:b_stop/features/bus_stops/domain/entities/stop.dart' show Stop;
-import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart' show StopRepository;
-import 'package:dio/dio.dart' show Dio;
-import 'package:flutter_test/flutter_test.dart' show equals, expect, group, test;
-import 'package:http_mock_adapter/http_mock_adapter.dart' show DioAdapter;
-import 'package:pretty_dio_logger/pretty_dio_logger.dart' show PrettyDioLogger;
-import 'package:rust_core/rust_core.dart' show Err, Iter, IterableExtension, Ok, Result;
+import 'package:b_stop/features/bus_data_retrieval/data/repositories/stop_repository_http_impl.dart';
+import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
+import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http_mock_adapter/http_mock_adapter.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:rust_core/rust_core.dart';
 
 void main() {
   group('fetchAll', () {
