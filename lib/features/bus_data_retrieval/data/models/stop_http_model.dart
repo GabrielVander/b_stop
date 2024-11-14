@@ -11,9 +11,9 @@ final class StopHttpModel extends Equatable {
 
   factory StopHttpModel.fromJson(Map<String, dynamic> json) => StopHttpModel(
         stopId: json['stopId'] as String,
-        name: json['name'] as String,
-        lat: json['lat'] as double,
-        lng: json['lng'] as double,
+        name: json['label'] as String,
+        lat: json['stopLat'] as double,
+        lng: json['stopLon'] as double,
       );
 
   final String stopId;
