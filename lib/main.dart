@@ -1,32 +1,29 @@
-import 'package:flutter/material.dart' show BuildContext, MaterialApp, Scaffold, Stack, StatelessWidget, Widget, runApp;
-import 'package:flutter_map/flutter_map.dart' show FlutterMap, MapController, MapOptions, TileLayer;
-import 'package:latlong2/latlong.dart' show LatLng;
+import 'package:b_stop/b_stop_app.dart';
+import 'package:b_stop/features/bus_data_retrieval/data/repositories/stop_repository_http_impl.dart';
+import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
+import 'package:b_stop/features/bus_stops/domain/use_cases/get_all_bus_stops_use_case.dart';
+import 'package:b_stop/features/bus_stops/presentation/state/stops_display_cubit.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+final Dio dioClient = Dio()..interceptors.add(LogInterceptor());
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+Future<void> main() async {
+  await dotenv.load();
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Stack(
-          children: [
-            FlutterMap(
-              mapController: MapController(),
-              options: const MapOptions(initialCenter: LatLng(-22.012, -47.891)),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  final HttpBaseInformation httpBaseInformation = HttpBaseInformation(
+    baseUrl: dotenv.get('HTTP_BASE_URL'),
+    projectId: dotenv.get('HTTP_PROJECT_ID'),
+    projectHash: dotenv.get('HTTP_PROJECT_HASH'),
+  );
+  final HttpStopsEndpoint stopsEndpoint = HttpStopsEndpoint(
+    httpBaseInfo: httpBaseInformation,
+    endpoint: dotenv.get('HTTP_STOPS_ENDPOINT'),
+  );
+  final StopRepository stopRepository = StopRepositoryHttpImpl(dioClient, stopsEndpoint);
+  final GetAllBusStopsUseCase getAllBusStopsUseCase = GetAllBusStopsUseCase(stopRepository: stopRepository);
+  final StopsDisplayCubit stopDisplayCubit = StopsDisplayCubit(getAllBusStopsUseCase: getAllBusStopsUseCase);
+
+  runApp(BStopApp(stopDisplayCubit: stopDisplayCubit));
 }
