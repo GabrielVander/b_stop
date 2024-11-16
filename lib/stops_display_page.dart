@@ -2,6 +2,7 @@ import 'package:b_stop/features/bus_stops/presentation/state/stops_display_cubit
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 
 class StopsDisplayPage extends StatelessWidget {
@@ -79,21 +80,34 @@ class _MapDisplay extends StatelessWidget {
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         ),
-        MarkerLayer(
-          rotate: true,
-          markers: stops
-              .map(
-                (stop) => Marker(
-                  key: ValueKey(stop.id),
-                  point: stop.point,
-                  child: Tooltip(
-                    triggerMode: TooltipTriggerMode.tap,
-                    message: stop.tooltipText,
-                    child: const Icon(Icons.location_on),
-                  ),
-                ),
-              )
-              .toList(),
+        MarkerClusterLayerWidget(
+          options: MarkerClusterLayerOptions(
+              rotate: true,
+              markers: stops
+                  .map(
+                    (stop) => Marker(
+                      key: ValueKey(stop.id),
+                      point: stop.point,
+                      child: Tooltip(
+                        triggerMode: TooltipTriggerMode.tap,
+                        message: stop.tooltipText,
+                        child: const Icon(Icons.location_on),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              builder: (context, markers) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.black,
+                    ),
+                    child: Center(
+                      child: Text(
+                        markers.length.toString(),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  )),
         ),
       ],
     );

@@ -1,7 +1,7 @@
 import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
 import 'package:json/json.dart';
 
-@JsonCodable()
+@JsonDecodable()
 final class StopHttpModel {
   const StopHttpModel({
     required this.stopLat,
