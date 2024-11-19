@@ -1,3 +1,4 @@
+import 'package:b_stop/core/utils/type_aliases/json.dart';
 import 'package:b_stop/features/bus_data_retrieval/data/repositories/stop_repository_http_impl.dart';
 import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
 import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
@@ -32,12 +33,14 @@ void main() {
         (status: 200, receivedJson: [null, 12, 'chrome'], expected: const Ok(<Stop>[])),
         (
           status: 200,
-          receivedJson: [
+          receivedJson: <Json>[
             {
               'stopId': '170A',
-              'label': 'forest blocked',
+              'stopName': 'forest blocked',
+              'label': 'shortly',
               'stopLat': -56.85,
               'stopLon': 73.27,
+              'distance': 0,
             },
           ],
           expected: const Ok(
@@ -57,9 +60,11 @@ void main() {
             90,
             {
               'stopId': '170A',
-              'label': 'forest blocked',
+              'stopName': 'forest blocked',
+              'label': 'ports',
               'stopLat': -56.85,
               'stopLon': 73.27,
+              'distance': 92,
             },
             'bryan',
             null,
@@ -97,7 +102,8 @@ void main() {
             case Err(:final err):
               expect(result.unwrapErr(), equals(err));
             case Ok(:final ok):
-              expect(result.unwrap(), equals(ok.iter()));
+              final stops = result.unwrap().toList();
+              expect(stops, equals(ok.toList()));
           }
         });
       }

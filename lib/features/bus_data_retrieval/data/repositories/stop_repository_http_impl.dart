@@ -1,6 +1,7 @@
 import 'package:b_stop/core/logging/b_stop_logger.dart';
 import 'package:b_stop/core/logging/b_stop_logger_factory.dart';
 import 'package:b_stop/core/utils/cast.dart';
+import 'package:b_stop/core/utils/type_aliases/json.dart';
 import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.dart';
 import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
 import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.dart';
@@ -57,23 +58,22 @@ class StopRepositoryHttpImpl implements StopRepository {
     return const Err('No data received');
   }
 
-  Result<Iter<Map<String, dynamic>>, String> _parseResponseBody(Object body) =>
-      _parseAsIterable(body).map(_parseAsJsonIterable);
+  Result<Iter<Json>, String> _parseResponseBody(Object body) => _parseAsIterable(body).map(_parseAsJsonIterable);
 
   Result<Iter<dynamic>, String> _parseAsIterable(Object body) => cast<List<dynamic>>(body)
       .map((i) => i.iter())
       .inspectErr((e) => _logger.error('Unable to parse response body as iterable: $e'))
       .mapErr((_) => 'Unexpected structure');
 
-  Iter<Map<String, dynamic>> _parseAsJsonIterable(Iter<dynamic> iterable) =>
+  Iter<Json> _parseAsJsonIterable(Iter<dynamic> iterable) =>
       iterable.map(_parseAsJson).where((parseResult) => parseResult.isOk()).map((parseResult) => parseResult.unwrap());
 
-  Result<Map<String, dynamic>, String> _parseAsJson(dynamic element) => cast<Map<String, dynamic>>(element)
+  Result<Json, String> _parseAsJson(dynamic element) => cast<Map<String, dynamic>>(element)
       .inspectErr((e) => _logger.warning('Unable to parse element from list: $e. Skipping...'));
 
-  Iter<Stop> _parseAsStopIterable(Iter<Map<String, dynamic>> jsonIter) => jsonIter.map(_parseAsStopEntity);
+  Iter<Stop> _parseAsStopIterable(Iter<Json> jsonIter) => jsonIter.map(_parseAsStopEntity);
 
-  Stop _parseAsStopEntity(Map<String, dynamic> json) => StopHttpModel.fromJson(json).toEntity();
+  Stop _parseAsStopEntity(Json json) => StopHttpModel.fromJson(json).toEntity();
 }
 
 sealed class HttpEndpoint {
