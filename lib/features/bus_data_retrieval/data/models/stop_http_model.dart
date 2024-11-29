@@ -1,7 +1,6 @@
+import 'package:b_stop/core/utils/type_aliases/json.dart';
 import 'package:b_stop/features/bus_stops/domain/entities/stop.dart';
-import 'package:json/json.dart';
 
-@JsonDecodable()
 final class StopHttpModel {
   const StopHttpModel({
     required this.stopLat,
@@ -14,6 +13,15 @@ final class StopHttpModel {
     this.street,
     this.streetNumber,
   });
+
+  factory StopHttpModel.fromJson(Json json) => StopHttpModel(
+        stopLat: json['stopLat'] as double,
+        distance: json['distance'] as int,
+        stopLon: json['stopLon'] as double,
+        stopId: json['stopId'] as String,
+        label: json['label'] as String,
+        stopName: json['stopName'] as String,
+      );
 
   final String? stopCode;
   final double stopLat;
