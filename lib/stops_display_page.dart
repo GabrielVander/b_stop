@@ -82,32 +82,33 @@ class _MapDisplay extends StatelessWidget {
         ),
         MarkerClusterLayerWidget(
           options: MarkerClusterLayerOptions(
-              rotate: true,
-              markers: stops
-                  .map(
-                    (stop) => Marker(
-                      key: ValueKey(stop.id),
-                      point: stop.point,
-                      child: Tooltip(
-                        triggerMode: TooltipTriggerMode.tap,
-                        message: stop.tooltipText,
-                        child: const Icon(Icons.location_on),
-                      ),
+            rotate: true,
+            markers: stops
+                .map(
+                  (stop) => Marker(
+                    key: ValueKey(stop.id),
+                    point: stop.point,
+                    child: Tooltip(
+                      triggerMode: TooltipTriggerMode.tap,
+                      message: stop.tooltipText,
+                      child: const Icon(Icons.location_on),
                     ),
-                  )
-                  .toList(),
-              builder: (context, markers) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.black,
-                    ),
-                    child: Center(
-                      child: Text(
-                        markers.length.toString(),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  )),
+                  ),
+                )
+                .toList(),
+            builder: (context, markers) => Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.black,
+              ),
+              child: Center(
+                child: Text(
+                  markers.length.toString(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
