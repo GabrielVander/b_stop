@@ -1,10 +1,12 @@
-import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.dart' show StopHttpModel;
+import 'package:b_stop/features/bus_data_retrieval/data/models/stop_http_model.dart'
+    show StopHttpModel;
 import 'package:b_stop/features/bus_stops/domain/entities/stop.dart' show Stop;
 import 'package:flutter_test/flutter_test.dart' show expect, group, test;
 
 void main() {
   group('toEntity', () {
-    for (final ({Stop entity, StopHttpModel model}) testCase in <({StopHttpModel model, Stop entity})>[
+    for (final ({Stop entity, StopHttpModel model}) testCase
+        in <({StopHttpModel model, Stop entity})>[
       (
         model: const StopHttpModel(
           stopId: 'BEF7F24D-A781-4AB3-9E16-9E7E09503671',

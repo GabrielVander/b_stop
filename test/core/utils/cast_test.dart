@@ -9,7 +9,8 @@ void main() {
 
       expect(
         result,
-        const Err<String, String>("type 'int' is not a subtype of type 'String' in type cast"),
+        const Err<String, String>(
+            "type 'int' is not a subtype of type 'String' in type cast"),
       );
     });
 
@@ -21,4 +22,3 @@ void main() {
     });
   });
 }
-

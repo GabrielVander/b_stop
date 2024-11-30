@@ -1,7 +1,11 @@
 import 'package:equatable/equatable.dart' show Equatable;
 
 class Stop extends Equatable {
-  const Stop({required this.id, required this.name, required this.lat, required this.lon});
+  const Stop(
+      {required this.id,
+      required this.name,
+      required this.lat,
+      required this.lon});
 
   final String id;
   final String name;

@@ -1,7 +1,10 @@
 import 'package:b_stop/core/logging/b_stop_logger.dart' show BStopLogger;
-import 'package:b_stop/core/logging/b_stop_logger_factory.dart' show BStopLoggerFactory;
-import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart' show StopOutput;
-import 'package:b_stop/features/bus_stops/domain/use_cases/get_all_bus_stops_use_case.dart' show GetAllBusStopsUseCase;
+import 'package:b_stop/core/logging/b_stop_logger_factory.dart'
+    show BStopLoggerFactory;
+import 'package:b_stop/features/bus_stops/domain/dtos/stop_output.dart'
+    show StopOutput;
+import 'package:b_stop/features/bus_stops/domain/use_cases/get_all_bus_stops_use_case.dart'
+    show GetAllBusStopsUseCase;
 import 'package:equatable/equatable.dart' show Equatable;
 import 'package:flutter_bloc/flutter_bloc.dart' show Cubit;
 import 'package:latlong2/latlong.dart' show LatLng;
@@ -42,17 +45,21 @@ class StopsDisplayCubit extends Cubit<StopsDisplayState> {
     return emit(StopsDisplayLoadedState(stops: stopViewModels));
   }
 
-  List<StopViewModel> _parseStops(List<StopOutput> ok) => ok.map(StopViewModel.fromOutput).toList();
+  List<StopViewModel> _parseStops(List<StopOutput> ok) =>
+      ok.map(StopViewModel.fromOutput).toList();
 
   Future<Result<List<StopOutput>, String>> _getBusStops() async =>
-      (await _getAllBusStopsUseCase.call()).map((s) => s.toList()).inspectErr(_logger.warning);
+      (await _getAllBusStopsUseCase.call())
+          .map((s) => s.toList())
+          .inspectErr(_logger.warning);
 }
 
 final class StopViewModel extends Equatable {
-  const StopViewModel({required this.id, required this.tooltipText, required this.point});
+  const StopViewModel(
+      {required this.id, required this.tooltipText, required this.point});
 
-  factory StopViewModel.fromOutput(StopOutput output) =>
-      StopViewModel(id: output.id, tooltipText: output.name, point: output.postion);
+  factory StopViewModel.fromOutput(StopOutput output) => StopViewModel(
+      id: output.id, tooltipText: output.name, point: output.postion);
 
   final String id;
   final String tooltipText;
