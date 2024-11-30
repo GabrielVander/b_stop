@@ -20,11 +20,16 @@ class StopsDisplayPage extends StatelessWidget {
         children: [
           BlocBuilder<StopsDisplayCubit, StopsDisplayState>(
             bloc: stopDisplayCubit,
-            builder: (BuildContext context, StopsDisplayState state) => switch (state) {
-              (StopsDisplayInitialLoadingState() || StopsDisplayLoadingState()) => const _Loading(),
-              StopsDisplayFailedState(errorMessage: final e) => _Failed(message: e),
+            builder: (BuildContext context, StopsDisplayState state) =>
+                switch (state) {
+              (StopsDisplayInitialLoadingState() ||
+                    StopsDisplayLoadingState()) =>
+                const _Loading(),
+              StopsDisplayFailedState(errorMessage: final e) =>
+                _Failed(message: e),
               StopsDisplayNoStopsState() => const _NoStops(),
-              StopsDisplayLoadedState(stops: final stops) => _MapDisplay(stops: stops),
+              StopsDisplayLoadedState(stops: final stops) =>
+                _MapDisplay(stops: stops),
             },
           ),
         ],

@@ -4,7 +4,16 @@ import 'dart:math' show min;
 import 'package:b_stop/core/logging/b_stop_logger.dart' show BStopLogger;
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:logger/logger.dart'
-    show AnsiColor, DateTimeFormat, HybridPrinter, Level, LogEvent, LogFilter, LogPrinter, Logger, PrettyPrinter;
+    show
+        AnsiColor,
+        DateTimeFormat,
+        HybridPrinter,
+        Level,
+        LogEvent,
+        LogFilter,
+        LogPrinter,
+        Logger,
+        PrettyPrinter;
 
 class BStopLoggerSourceHorizonImpl implements BStopLogger {
   final Logger _logger = Logger(
@@ -28,7 +37,8 @@ class BStopLoggerSourceHorizonImpl implements BStopLogger {
 
   @override
   void error(String message, {Exception? error, StackTrace? stackTrace}) =>
-      _logger.e(message, time: DateTime.now(), error: error, stackTrace: stackTrace);
+      _logger.e(message,
+          time: DateTime.now(), error: error, stackTrace: stackTrace);
 
   @override
   void info(String message) => _logger.i(message, time: DateTime.now());
@@ -51,14 +61,17 @@ class _DynamicFilter extends LogFilter {
   Level getMinimumLogLevel() {
     final int value = _getMinimumLogLevelUpToInfo();
 
-    return kReleaseMode ? Level.values.firstWhere((Level element) => element.value == value) : level!;
+    return kReleaseMode
+        ? Level.values.firstWhere((Level element) => element.value == value)
+        : level!;
   }
 
   int _getMinimumLogLevelUpToInfo() => min<int>(level!.value, Level.info.value);
 }
 
 class _SimplePrinterWithFullPrefixesAndFullColor extends LogPrinter {
-  _SimplePrinterWithFullPrefixesAndFullColor({bool printTime = true, bool colors = true})
+  _SimplePrinterWithFullPrefixesAndFullColor(
+      {bool printTime = true, bool colors = true})
       : _printTime = printTime,
         _colors = colors;
 
@@ -86,14 +99,16 @@ class _SimplePrinterWithFullPrefixesAndFullColor extends LogPrinter {
   @override
   List<String> log(LogEvent event) {
     final String messageStr = _stringifyMessage(event.message);
-    final String errorStr = event.error != null ? '  ERROR: ${event.error}' : '';
+    final String errorStr =
+        event.error != null ? '  ERROR: ${event.error}' : '';
     final String timeStr = _printTime ? event.time.toIso8601String() : '';
     return <String>[
       '$timeStr ${_getMessageParser(event.level)("${_prefixFor(event.level)} $messageStr$errorStr")}',
     ];
   }
 
-  String Function(String) _getMessageParser(Level level) => _colors ? _colorFor(level).call : (String msg) => msg;
+  String Function(String) _getMessageParser(Level level) =>
+      _colors ? _colorFor(level).call : (String msg) => msg;
 
   String _prefixFor(Level level) => levelPrefixes[level]!;
 

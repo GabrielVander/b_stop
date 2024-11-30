@@ -33,5 +33,6 @@ final class StopHttpModel {
   final String label;
   final String stopName;
 
-  Stop toEntity() => Stop(id: stopId, name: stopName, lat: stopLat, lon: stopLon);
+  Stop toEntity() =>
+      Stop(id: stopId, name: stopName, lat: stopLat, lon: stopLon);
 }
