@@ -59,7 +59,7 @@ impl TripRepositoryHttpImpl {
 #[async_trait]
 impl TripRepository for TripRepositoryHttpImpl {
     async fn fetch_all_for_stop(&self, stop_hash: String) -> Result<Vec<Trip>, String> {
-        log::debug!("Fetching all trips for stop with hash {stop_hash}...");
+        log::debug!("Fetching all trips for stop with hash {stop_hash} via HTTP...");
 
         futures::future::ready(self.build_target_url(stop_hash))
             .and_then(|url| self.perform_request(url))
