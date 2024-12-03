@@ -7,4 +7,13 @@ edition = "2021"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
+async-trait = "0.1.83"
+dotenv = "0.15.0"
 flutter_rust_bridge = "=2.6.0"
+futures = "0.3.31"
+log = "0.4.22"
+pretty_env_logger = "0.5.0"
+reqwest = { version = "0.12.9", features = ["json"] }
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.133"
+tokio = "1.41.1"
