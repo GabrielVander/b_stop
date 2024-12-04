@@ -7,7 +7,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 
-import 'package:b_stop/src/rust/api/simple.dart';
+import 'package:b_stop/src/rust/api/trips.dart';
 import 'package:b_stop/src/rust/frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 
@@ -23,7 +23,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  bool dco_decode_bool(dynamic raw);
+
+  @protected
+  DepartureModel dco_decode_departure_model(dynamic raw);
+
+  @protected
+  List<DepartureModel> dco_decode_list_departure_model(dynamic raw);
+
+  @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+
+  @protected
+  List<TripModel> dco_decode_list_trip_model(dynamic raw);
+
+  @protected
+  TripModel dco_decode_trip_model(dynamic raw);
 
   @protected
   int dco_decode_u_8(dynamic raw);
@@ -35,7 +50,23 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  bool sse_decode_bool(SseDeserializer deserializer);
+
+  @protected
+  DepartureModel sse_decode_departure_model(SseDeserializer deserializer);
+
+  @protected
+  List<DepartureModel> sse_decode_list_departure_model(
+      SseDeserializer deserializer);
+
+  @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  List<TripModel> sse_decode_list_trip_model(SseDeserializer deserializer);
+
+  @protected
+  TripModel sse_decode_trip_model(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_8(SseDeserializer deserializer);
@@ -47,16 +78,29 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
-  bool sse_decode_bool(SseDeserializer deserializer);
-
-  @protected
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
+  void sse_encode_bool(bool self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_departure_model(
+      DepartureModel self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_departure_model(
+      List<DepartureModel> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_prim_u_8_strict(
-    Uint8List self,
-    SseSerializer serializer,
-  );
+      Uint8List self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_trip_model(
+      List<TripModel> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_trip_model(TripModel self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_8(int self, SseSerializer serializer);
@@ -66,9 +110,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_bool(bool self, SseSerializer serializer);
 }
 
 // Section: wire_class
@@ -77,6 +118,7 @@ class RustLibWire implements BaseWire {
   /// The symbols are looked up in [dynamicLibrary].
   RustLibWire(ffi.DynamicLibrary dynamicLibrary)
       : _lookup = dynamicLibrary.lookup;
+
   factory RustLibWire.fromExternalLibrary(ExternalLibrary lib) =>
       RustLibWire(lib.ffiDynamicLibrary);
 
