@@ -7,4 +7,4 @@ import 'package:b_stop/src/rust/frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 String greet({required String name}) =>
-    RustLib.instance.api.crateApiSimpleGreet(name: name);
+    RustLib.instance.api.crateApiInitAppGreet(name: name);
