@@ -1,4 +1,6 @@
 import 'package:b_stop/features/bus_stops/presentation/state/stops_display_cubit.dart';
+import 'package:b_stop/features/bus_stops/presentation/state/trips_departures_display_cubit.dart';
+import 'package:b_stop/features/bus_stops/presentation/widgets/trips_modal_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -8,10 +10,12 @@ import 'package:latlong2/latlong.dart';
 class StopsDisplayPage extends StatelessWidget {
   const StopsDisplayPage({
     required this.stopDisplayCubit,
+    required this.tripsDeparturesDisplayCubit,
     super.key,
   });
 
   final StopsDisplayCubit stopDisplayCubit;
+  final TripsDeparturesDisplayCubit tripsDeparturesDisplayCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +24,12 @@ class StopsDisplayPage extends StatelessWidget {
         children: [
           BlocBuilder<StopsDisplayCubit, StopsDisplayState>(
             bloc: stopDisplayCubit,
-            builder: (BuildContext context, StopsDisplayState state) =>
-                switch (state) {
-              (StopsDisplayInitialLoadingState() ||
-                    StopsDisplayLoadingState()) =>
-                const _Loading(),
-              StopsDisplayFailedState(errorMessage: final e) =>
-                _Failed(message: e),
+            builder: (BuildContext context, StopsDisplayState state) => switch (state) {
+              (StopsDisplayInitialLoadingState() || StopsDisplayLoadingState()) => const _Loading(),
+              StopsDisplayFailedState(errorMessage: final e) => _Failed(message: e),
               StopsDisplayNoStopsState() => const _NoStops(),
               StopsDisplayLoadedState(stops: final stops) =>
-                _MapDisplay(stops: stops),
+                _MapDisplay(tripsDeparturesDisplayCubit: tripsDeparturesDisplayCubit, stops: stops),
             },
           ),
         ],
@@ -72,8 +72,10 @@ class _NoStops extends StatelessWidget {
 class _MapDisplay extends StatelessWidget {
   const _MapDisplay({
     required this.stops,
+    required this.tripsDeparturesDisplayCubit,
   });
 
+  final TripsDeparturesDisplayCubit tripsDeparturesDisplayCubit;
   final List<StopViewModel> stops;
 
   @override
@@ -93,10 +95,21 @@ class _MapDisplay extends StatelessWidget {
                   (stop) => Marker(
                     key: ValueKey(stop.id),
                     point: stop.point,
-                    child: Tooltip(
-                      triggerMode: TooltipTriggerMode.tap,
-                      message: stop.tooltipText,
-                      child: const Icon(Icons.location_on),
+                    child: GestureDetector(
+                      onTap: () => showModalBottomSheet<void>(
+                        context: context,
+                        showDragHandle: true,
+                        builder: (context) => TripsModalBottomSheet(
+                          tripsDeparturesDisplayCubit: tripsDeparturesDisplayCubit,
+                          stopId: stop.id,
+                          title: stop.bottomSheetTitle,
+                        ),
+                      ),
+                      child: Tooltip(
+                        triggerMode: TooltipTriggerMode.tap,
+                        message: stop.tooltipText,
+                        child: const Icon(Icons.location_on),
+                      ),
                     ),
                   ),
                 )
