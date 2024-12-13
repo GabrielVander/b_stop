@@ -2,6 +2,7 @@ import 'package:b_stop/src/rust/api/trips.dart';
 import 'package:b_stop/src/rust/features/trips/domain/entities/trip.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:rust_core/rust_core.dart';
 
 class TripsDeparturesDisplayCubit extends Cubit<TripsDeparturesDisplayState> {
@@ -79,7 +80,7 @@ class DepartureViewModel extends Equatable {
 
   factory DepartureViewModel.fromEntity(Departure model) => DepartureViewModel(
         id: model.id,
-        time: model.time,
+        time: DateFormat.jm().format(model.time),
         isNextDay: model.isNextDay,
         isAccurate: model.isTimeBasedOnGps,
       );

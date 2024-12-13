@@ -155,6 +155,21 @@ fn wire__crate__api__setup_environment_variables__setup_environment_variables_im
 
 // Section: dart2rust
 
+impl SseDecode for chrono::DateTime<chrono::Local> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i64>::sse_decode(deserializer);
+        return chrono::DateTime::<chrono::Local>::from(
+            chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(
+                chrono::DateTime::from_timestamp_micros(inner)
+                    .expect("invalid or out-of-range datetime")
+                    .naive_utc(),
+                chrono::Utc,
+            ),
+        );
+    }
+}
+
 impl SseDecode for std::collections::HashMap<String, String> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -182,7 +197,7 @@ impl SseDecode for crate::features::trips::domain::entities::trip::Departure {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_id = <String>::sse_decode(deserializer);
-        let mut var_time = <String>::sse_decode(deserializer);
+        let mut var_time = <chrono::DateTime<chrono::Local>>::sse_decode(deserializer);
         let mut var_isNextDay = <bool>::sse_decode(deserializer);
         let mut var_isTimeBasedOnGps = <bool>::sse_decode(deserializer);
         return crate::features::trips::domain::entities::trip::Departure {
@@ -191,6 +206,13 @@ impl SseDecode for crate::features::trips::domain::entities::trip::Departure {
             is_next_day: var_isNextDay,
             is_time_based_on_gps: var_isTimeBasedOnGps,
         };
+    }
+}
+
+impl SseDecode for i64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_i64::<NativeEndian>().unwrap()
     }
 }
 
@@ -377,6 +399,13 @@ impl flutter_rust_bridge::IntoIntoDart<crate::features::trips::domain::entities:
     }
 }
 
+impl SseEncode for chrono::DateTime<chrono::Local> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.timestamp_micros(), serializer);
+    }
+}
+
 impl SseEncode for std::collections::HashMap<String, String> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -402,9 +431,16 @@ impl SseEncode for crate::features::trips::domain::entities::trip::Departure {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.id, serializer);
-        <String>::sse_encode(self.time, serializer);
+        <chrono::DateTime<chrono::Local>>::sse_encode(self.time, serializer);
         <bool>::sse_encode(self.is_next_day, serializer);
         <bool>::sse_encode(self.is_time_based_on_gps, serializer);
+    }
+}
+
+impl SseEncode for i64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_i64::<NativeEndian>(self).unwrap();
     }
 }
 
