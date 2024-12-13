@@ -180,6 +180,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @protected
+  DateTime dco_decode_Chrono_Local(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeTimestamp(ts: dco_decode_i_64(raw), isUtc: false);
+  }
+
+  @protected
   Map<String, String> dco_decode_Map_String_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return Map.fromEntries(dco_decode_list_record_string_string(raw)
@@ -206,10 +212,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return Departure(
       id: dco_decode_String(arr[0]),
-      time: dco_decode_String(arr[1]),
+      time: dco_decode_Chrono_Local(arr[1]),
       isNextDay: dco_decode_bool(arr[2]),
       isTimeBasedOnGps: dco_decode_bool(arr[3]),
     );
+  }
+
+  @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeI64(raw);
   }
 
   @protected
@@ -276,6 +288,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  DateTime sse_decode_Chrono_Local(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    final inner = sse_decode_i_64(deserializer);
+    return DateTime.fromMicrosecondsSinceEpoch(inner);
+  }
+
+  @protected
   Map<String, String> sse_decode_Map_String_String(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -300,7 +319,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Departure sse_decode_departure(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     final var_id = sse_decode_String(deserializer);
-    final var_time = sse_decode_String(deserializer);
+    final var_time = sse_decode_Chrono_Local(deserializer);
     final var_isNextDay = sse_decode_bool(deserializer);
     final var_isTimeBasedOnGps = sse_decode_bool(deserializer);
     return Departure(
@@ -308,6 +327,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         time: var_time,
         isNextDay: var_isNextDay,
         isTimeBasedOnGps: var_isTimeBasedOnGps);
+  }
+
+  @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getPlatformInt64();
   }
 
   @protected
@@ -395,6 +420,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_Chrono_Local(DateTime self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(
+        PlatformInt64Util.from(self.microsecondsSinceEpoch), serializer);
+  }
+
+  @protected
   void sse_encode_Map_String_String(
       Map<String, String> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -418,9 +450,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_departure(Departure self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.id, serializer);
-    sse_encode_String(self.time, serializer);
+    sse_encode_Chrono_Local(self.time, serializer);
     sse_encode_bool(self.isNextDay, serializer);
     sse_encode_bool(self.isTimeBasedOnGps, serializer);
+  }
+
+  @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putPlatformInt64(self);
   }
 
   @protected

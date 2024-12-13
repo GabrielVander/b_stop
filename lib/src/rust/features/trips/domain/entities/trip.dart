@@ -14,7 +14,7 @@ class Departure {
     required this.isTimeBasedOnGps,
   });
   final String id;
-  final String time;
+  final DateTime time;
   final bool isNextDay;
   final bool isTimeBasedOnGps;
 

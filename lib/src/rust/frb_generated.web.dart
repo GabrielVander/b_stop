@@ -24,6 +24,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   });
 
   @protected
+  DateTime dco_decode_Chrono_Local(dynamic raw);
+
+  @protected
   Map<String, String> dco_decode_Map_String_String(dynamic raw);
 
   @protected
@@ -34,6 +37,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Departure dco_decode_departure(dynamic raw);
+
+  @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw);
 
   @protected
   List<Departure> dco_decode_list_departure(dynamic raw);
@@ -60,6 +66,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void dco_decode_unit(dynamic raw);
 
   @protected
+  DateTime sse_decode_Chrono_Local(SseDeserializer deserializer);
+
+  @protected
   Map<String, String> sse_decode_Map_String_String(
       SseDeserializer deserializer);
 
@@ -71,6 +80,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Departure sse_decode_departure(SseDeserializer deserializer);
+
+  @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
 
   @protected
   List<Departure> sse_decode_list_departure(SseDeserializer deserializer);
@@ -102,6 +114,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
+  void sse_encode_Chrono_Local(DateTime self, SseSerializer serializer);
+
+  @protected
   void sse_encode_Map_String_String(
       Map<String, String> self, SseSerializer serializer);
 
@@ -113,6 +128,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_departure(Departure self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_departure(

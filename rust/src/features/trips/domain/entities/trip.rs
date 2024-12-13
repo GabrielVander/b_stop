@@ -1,3 +1,5 @@
+use chrono::{DateTime, Local};
+
 #[derive(Debug)]
 pub struct Trip {
     pub id: String,
@@ -25,13 +27,18 @@ impl Trip {
 #[derive(Debug)]
 pub struct Departure {
     pub id: String,
-    pub time: String,
+    pub time: DateTime<Local>,
     pub is_next_day: bool,
     pub is_time_based_on_gps: bool,
 }
 
 impl Departure {
-    pub fn new(id: String, time: String, is_next_day: bool, is_time_based_on_gps: bool) -> Self {
+    pub fn new(
+        id: String,
+        time: DateTime<Local>,
+        is_next_day: bool,
+        is_time_based_on_gps: bool,
+    ) -> Self {
         Self {
             id,
             time,

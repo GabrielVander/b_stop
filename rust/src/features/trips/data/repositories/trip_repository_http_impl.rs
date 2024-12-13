@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use chrono::{DateTime, Local, NaiveDateTime, NaiveTime};
 use futures::TryFutureExt;
 
 use crate::features::trips::domain::{
@@ -138,7 +139,15 @@ impl DepartureResponseModel {
     pub fn to_entity(&self) -> Departure {
         Departure {
             id: self.trip_feed_id.clone(),
-            time: self.gps_time.clone().unwrap_or(self.time.clone()),
+            time: Local::now()
+                .with_time(
+                    NaiveTime::parse_from_str(
+                        &self.gps_time.clone().unwrap_or(self.time.clone()),
+                        "%H:%M:%S",
+                    )
+                    .expect("Unable to parse time"),
+                )
+                .unwrap(),
             is_next_day: self.next_day,
             is_time_based_on_gps: self.gps_time.is_some(),
         }
