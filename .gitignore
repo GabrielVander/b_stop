@@ -49,3 +49,7 @@ coverage/lcov.info
 rust/Cargo.lock
 rust/android/app/src/main/jniLibs/arm64-v8a/librust_lib_b_stop.so
 rust/android/app/src/main/jniLibs/armeabi-v7a/librust_lib_b_stop.so
+lib/src/rust/frb_generated.dart
+lib/src/rust/frb_generated.io.dart
+lib/src/rust/frb_generated.web.dart
+rust/src/frb_generated.rs
