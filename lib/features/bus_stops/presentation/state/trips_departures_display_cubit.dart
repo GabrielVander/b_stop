@@ -6,14 +6,12 @@ import 'package:rust_core/rust_core.dart';
 class TripsDeparturesDisplayCubit extends Cubit<TripsDeparturesDisplayState> {
   TripsDeparturesDisplayCubit() : super(TripsDeparturesDisplayLoadingState());
 
-  void getTripsForStop(String stopHash) {
+  Future<void> getTripsForStop(String stopHash) async {
     emit(TripsDeparturesDisplayLoadingState());
     try {
-      tripsForStop(stopHash: stopHash).then(
-        (tripModels) => emit(
-          TripsDeparturesDisplayLoadedState(trips: tripModels.iter().map(TripViewModel.fromModel).collectList()),
-        ),
-      );
+      final List<TripModel> tripModels = await tripsForStop(stopHash: stopHash);
+
+      emit(TripsDeparturesDisplayLoadedState(trips: tripModels.iter().map(TripViewModel.fromModel).collectList()));
     } on Exception catch (e) {
       emit(TripsDeparturesDisplayFailureState(errorMessage: e.toString()));
     }
