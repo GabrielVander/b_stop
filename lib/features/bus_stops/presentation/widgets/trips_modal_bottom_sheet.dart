@@ -23,16 +23,16 @@ class TripsModalBottomSheet extends StatelessWidget {
       child: Column(
         children: [
           Text(title),
-          Expanded(
-            child: BlocBuilder<TripsDeparturesDisplayCubit, TripsDeparturesDisplayState>(
-              bloc: tripsDeparturesDisplayCubit..getTripsForStop(stopId),
-              builder: (context, state) {
-                return switch (state) {
-                  TripsDeparturesDisplayLoadingState() => const CircularProgressIndicator.adaptive(),
-                  TripsDeparturesDisplayFailureState(errorMessage: final errorMessage) =>
-                    Center(child: Text('Failed to retrieve data\n$errorMessage')),
-                  TripsDeparturesDisplayEmptyState() => const Center(child: Text('No data')),
-                  TripsDeparturesDisplayLoadedState(trips: final trips) => ListView.separated(
+          BlocBuilder<TripsDeparturesDisplayCubit, TripsDeparturesDisplayState>(
+            bloc: tripsDeparturesDisplayCubit..getTripsForStop(stopId),
+            builder: (context, state) {
+              return switch (state) {
+                TripsDeparturesDisplayLoadingState() => const CircularProgressIndicator.adaptive(),
+                TripsDeparturesDisplayFailureState(errorMessage: final errorMessage) =>
+                  Center(child: Text('Failed to retrieve data\n$errorMessage')),
+                TripsDeparturesDisplayEmptyState() => const Center(child: Text('No data')),
+                TripsDeparturesDisplayLoadedState(trips: final trips) => Expanded(
+                    child: ListView.separated(
                       shrinkWrap: true,
                       separatorBuilder: (context, index) => const SizedBox(height: 15),
                       itemCount: trips.length,
@@ -48,9 +48,9 @@ class TripsModalBottomSheet extends StatelessWidget {
                         ],
                       ),
                     ),
-                };
-              },
-            ),
+                  ),
+              };
+            },
           ),
         ],
       ),

@@ -96,11 +96,20 @@ class _MapDisplay extends StatelessWidget {
                     key: ValueKey(stop.id),
                     point: stop.point,
                     child: GestureDetector(
+                      onDoubleTap: () => showModalBottomSheet<void>(
+                        context: context,
+                        showDragHandle: true,
+                        builder: (context) => TripsModalBottomSheet(
+                          tripsDeparturesDisplayCubit: tripsDeparturesDisplayCubit..getTripsForStop(stop.id),
+                          stopId: stop.id,
+                          title: stop.bottomSheetTitle,
+                        ),
+                      ),
                       onTap: () => showModalBottomSheet<void>(
                         context: context,
                         showDragHandle: true,
                         builder: (context) => TripsModalBottomSheet(
-                          tripsDeparturesDisplayCubit: tripsDeparturesDisplayCubit,
+                          tripsDeparturesDisplayCubit: tripsDeparturesDisplayCubit..getTripsForStop(stop.id),
                           stopId: stop.id,
                           title: stop.bottomSheetTitle,
                         ),

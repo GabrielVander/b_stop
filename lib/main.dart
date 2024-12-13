@@ -4,6 +4,7 @@ import 'package:b_stop/features/bus_stops/domain/repositories/stop_repository.da
 import 'package:b_stop/features/bus_stops/domain/use_cases/get_all_bus_stops_use_case.dart';
 import 'package:b_stop/features/bus_stops/presentation/state/stops_display_cubit.dart';
 import 'package:b_stop/features/bus_stops/presentation/state/trips_departures_display_cubit.dart';
+import 'package:b_stop/src/rust/api/setup_environment_variables.dart';
 import 'package:b_stop/src/rust/frb_generated.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
@@ -15,6 +16,7 @@ Future<void> main() async {
   await dotenv.load();
   await RustLib.init();
 
+  await setupEnvironmentVariables(map: dotenv.env);
   final HttpStopsEndpoint stopsEndpoint = HttpStopsEndpoint(url: dotenv.get('HTTP_STOPS_URL'));
   final StopRepository stopRepository = StopRepositoryHttpImpl(dioClient, stopsEndpoint);
 
