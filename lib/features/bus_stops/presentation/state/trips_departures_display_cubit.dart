@@ -1,4 +1,5 @@
 import 'package:b_stop/src/rust/api/trips.dart';
+import 'package:b_stop/src/rust/features/trips/domain/entities/trip.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rust_core/rust_core.dart';
@@ -6,12 +7,16 @@ import 'package:rust_core/rust_core.dart';
 class TripsDeparturesDisplayCubit extends Cubit<TripsDeparturesDisplayState> {
   TripsDeparturesDisplayCubit() : super(TripsDeparturesDisplayLoadingState());
 
-  Future<void> getTripsForStop(String stopHash) async {
+  Future<void> getTripsForStop(String stopId) async {
     emit(TripsDeparturesDisplayLoadingState());
     try {
-      final List<TripModel> tripModels = await tripsForStop(stopHash: stopHash);
+      final List<Trip> tripModels = await fetchAllForStop(stopId: stopId);
 
-      emit(TripsDeparturesDisplayLoadedState(trips: tripModels.iter().map(TripViewModel.fromModel).collectList()));
+      emit(
+        TripsDeparturesDisplayLoadedState(
+          trips: tripModels.iter().map<TripViewModel>(TripViewModel.fromEntity).collectList(),
+        ),
+      );
     } on Exception catch (e) {
       emit(TripsDeparturesDisplayFailureState(errorMessage: e.toString()));
     }
@@ -53,11 +58,11 @@ class TripsDeparturesDisplayLoadedState extends TripsDeparturesDisplayState {
 class TripViewModel extends Equatable {
   const TripViewModel({required this.id, required this.lineNumber, required this.lineName, required this.departures});
 
-  factory TripViewModel.fromModel(TripModel model) => TripViewModel(
+  factory TripViewModel.fromEntity(Trip model) => TripViewModel(
         id: model.id,
         lineNumber: model.lineNumber,
         lineName: model.lineName,
-        departures: model.departures.iter().map(DepartureViewModel.fromModel).collectList(),
+        departures: model.departures.iter().map<DepartureViewModel>(DepartureViewModel.fromEntity).collectList(),
       );
 
   final String id;
@@ -72,7 +77,7 @@ class TripViewModel extends Equatable {
 class DepartureViewModel extends Equatable {
   const DepartureViewModel({required this.id, required this.time, required this.isNextDay, required this.isAccurate});
 
-  factory DepartureViewModel.fromModel(DepartureModel model) => DepartureViewModel(
+  factory DepartureViewModel.fromEntity(Departure model) => DepartureViewModel(
         id: model.id,
         time: model.time,
         isNextDay: model.isNextDay,

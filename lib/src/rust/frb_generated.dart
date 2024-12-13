@@ -8,6 +8,7 @@ import 'dart:convert';
 
 import 'package:b_stop/src/rust/api/setup_environment_variables.dart';
 import 'package:b_stop/src/rust/api/trips.dart';
+import 'package:b_stop/src/rust/features/trips/domain/entities/trip.dart';
 import 'package:b_stop/src/rust/frb_generated.dart';
 import 'package:b_stop/src/rust/frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
@@ -69,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.6.0';
 
   @override
-  int get rustContentHash => 63731237;
+  int get rustContentHash => -1180234674;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -80,12 +81,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  Future<List<Trip>> crateApiTripsFetchAllForStop({required String stopId});
+
   Future<void> crateApiInitAppInitApp();
 
   Future<void> crateApiSetupEnvironmentVariablesSetupEnvironmentVariables(
       {required Map<String, String> map});
-
-  Future<List<TripModel>> crateApiTripsTripsForStop({required String stopHash});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -97,13 +98,40 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
+  Future<List<Trip>> crateApiTripsFetchAllForStop({required String stopId}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(stopId, serializer);
+          pdeCallFfi(generalizedFrbRustBinding, serializer,
+              funcId: 1, port: port_);
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_trip,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiTripsFetchAllForStopConstMeta,
+        argValues: [stopId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiTripsFetchAllForStopConstMeta =>
+      const TaskConstMeta(
+        debugName: 'fetch_all_for_stop',
+        argNames: ['stopId'],
+      );
+
+  @override
   Future<void> crateApiInitAppInitApp() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           pdeCallFfi(generalizedFrbRustBinding, serializer,
-              funcId: 1, port: port_);
+              funcId: 2, port: port_);
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -130,7 +158,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_Map_String_String(map, serializer);
           pdeCallFfi(generalizedFrbRustBinding, serializer,
-              funcId: 2, port: port_);
+              funcId: 3, port: port_);
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -150,33 +178,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             debugName: 'setup_environment_variables',
             argNames: ['map'],
           );
-
-  @override
-  Future<List<TripModel>> crateApiTripsTripsForStop(
-      {required String stopHash}) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(stopHash, serializer);
-          pdeCallFfi(generalizedFrbRustBinding, serializer,
-              funcId: 3, port: port_);
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_list_trip_model,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiTripsTripsForStopConstMeta,
-        argValues: [stopHash],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiTripsTripsForStopConstMeta => const TaskConstMeta(
-        debugName: 'trips_for_stop',
-        argNames: ['stopHash'],
-      );
 
   @protected
   Map<String, String> dco_decode_Map_String_String(dynamic raw) {
@@ -198,12 +199,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  DepartureModel dco_decode_departure_model(dynamic raw) {
+  Departure dco_decode_departure(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 4)
       throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return DepartureModel(
+    return Departure(
       id: dco_decode_String(arr[0]),
       time: dco_decode_String(arr[1]),
       isNextDay: dco_decode_bool(arr[2]),
@@ -212,9 +213,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<DepartureModel> dco_decode_list_departure_model(dynamic raw) {
+  List<Departure> dco_decode_list_departure(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return (raw as List<dynamic>).map(dco_decode_departure_model).toList();
+    return (raw as List<dynamic>).map(dco_decode_departure).toList();
   }
 
   @protected
@@ -230,9 +231,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<TripModel> dco_decode_list_trip_model(dynamic raw) {
+  List<Trip> dco_decode_list_trip(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return (raw as List<dynamic>).map(dco_decode_trip_model).toList();
+    return (raw as List<dynamic>).map(dco_decode_trip).toList();
   }
 
   @protected
@@ -249,16 +250,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TripModel dco_decode_trip_model(dynamic raw) {
+  Trip dco_decode_trip(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 4)
       throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return TripModel(
+    return Trip(
       id: dco_decode_String(arr[0]),
       lineNumber: dco_decode_String(arr[1]),
       lineName: dco_decode_String(arr[2]),
-      departures: dco_decode_list_departure_model(arr[3]),
+      departures: dco_decode_list_departure(arr[3]),
     );
   }
 
@@ -296,13 +297,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  DepartureModel sse_decode_departure_model(SseDeserializer deserializer) {
+  Departure sse_decode_departure(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     final var_id = sse_decode_String(deserializer);
     final var_time = sse_decode_String(deserializer);
     final var_isNextDay = sse_decode_bool(deserializer);
     final var_isTimeBasedOnGps = sse_decode_bool(deserializer);
-    return DepartureModel(
+    return Departure(
         id: var_id,
         time: var_time,
         isNextDay: var_isNextDay,
@@ -310,14 +311,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<DepartureModel> sse_decode_list_departure_model(
-      SseDeserializer deserializer) {
+  List<Departure> sse_decode_list_departure(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     final len_ = sse_decode_i_32(deserializer);
-    final ans_ = <DepartureModel>[];
+    final ans_ = <Departure>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
-      ans_.add(sse_decode_departure_model(deserializer));
+      ans_.add(sse_decode_departure(deserializer));
     }
     return ans_;
   }
@@ -343,13 +343,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<TripModel> sse_decode_list_trip_model(SseDeserializer deserializer) {
+  List<Trip> sse_decode_list_trip(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     final len_ = sse_decode_i_32(deserializer);
-    final ans_ = <TripModel>[];
+    final ans_ = <Trip>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
-      ans_.add(sse_decode_trip_model(deserializer));
+      ans_.add(sse_decode_trip(deserializer));
     }
     return ans_;
   }
@@ -364,13 +364,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TripModel sse_decode_trip_model(SseDeserializer deserializer) {
+  Trip sse_decode_trip(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     final var_id = sse_decode_String(deserializer);
     final var_lineNumber = sse_decode_String(deserializer);
     final var_lineName = sse_decode_String(deserializer);
-    final var_departures = sse_decode_list_departure_model(deserializer);
-    return TripModel(
+    final var_departures = sse_decode_list_departure(deserializer);
+    return Trip(
         id: var_id,
         lineNumber: var_lineNumber,
         lineName: var_lineName,
@@ -415,8 +415,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_departure_model(
-      DepartureModel self, SseSerializer serializer) {
+  void sse_encode_departure(Departure self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.id, serializer);
     sse_encode_String(self.time, serializer);
@@ -425,12 +424,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_list_departure_model(
-      List<DepartureModel> self, SseSerializer serializer) {
+  void sse_encode_list_departure(
+      List<Departure> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
-      sse_encode_departure_model(item, serializer);
+      sse_encode_departure(item, serializer);
     }
   }
 
@@ -453,12 +452,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_list_trip_model(
-      List<TripModel> self, SseSerializer serializer) {
+  void sse_encode_list_trip(List<Trip> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
-      sse_encode_trip_model(item, serializer);
+      sse_encode_trip(item, serializer);
     }
   }
 
@@ -471,12 +469,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_trip_model(TripModel self, SseSerializer serializer) {
+  void sse_encode_trip(Trip self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.id, serializer);
     sse_encode_String(self.lineNumber, serializer);
     sse_encode_String(self.lineName, serializer);
-    sse_encode_list_departure_model(self.departures, serializer);
+    sse_encode_list_departure(self.departures, serializer);
   }
 
   @protected

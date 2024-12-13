@@ -9,6 +9,7 @@ import 'dart:ffi' as ffi;
 
 import 'package:b_stop/src/rust/api/setup_environment_variables.dart';
 import 'package:b_stop/src/rust/api/trips.dart';
+import 'package:b_stop/src/rust/features/trips/domain/entities/trip.dart';
 import 'package:b_stop/src/rust/frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 
@@ -30,10 +31,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
-  DepartureModel dco_decode_departure_model(dynamic raw);
+  Departure dco_decode_departure(dynamic raw);
 
   @protected
-  List<DepartureModel> dco_decode_list_departure_model(dynamic raw);
+  List<Departure> dco_decode_list_departure(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -42,13 +43,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<(String, String)> dco_decode_list_record_string_string(dynamic raw);
 
   @protected
-  List<TripModel> dco_decode_list_trip_model(dynamic raw);
+  List<Trip> dco_decode_list_trip(dynamic raw);
 
   @protected
   (String, String) dco_decode_record_string_string(dynamic raw);
 
   @protected
-  TripModel dco_decode_trip_model(dynamic raw);
+  Trip dco_decode_trip(dynamic raw);
 
   @protected
   int dco_decode_u_8(dynamic raw);
@@ -67,11 +68,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
-  DepartureModel sse_decode_departure_model(SseDeserializer deserializer);
+  Departure sse_decode_departure(SseDeserializer deserializer);
 
   @protected
-  List<DepartureModel> sse_decode_list_departure_model(
-      SseDeserializer deserializer);
+  List<Departure> sse_decode_list_departure(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -81,14 +81,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
-  List<TripModel> sse_decode_list_trip_model(SseDeserializer deserializer);
+  List<Trip> sse_decode_list_trip(SseDeserializer deserializer);
 
   @protected
   (String, String) sse_decode_record_string_string(
       SseDeserializer deserializer);
 
   @protected
-  TripModel sse_decode_trip_model(SseDeserializer deserializer);
+  Trip sse_decode_trip(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_8(SseDeserializer deserializer);
@@ -110,12 +110,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
-  void sse_encode_departure_model(
-      DepartureModel self, SseSerializer serializer);
+  void sse_encode_departure(Departure self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_departure_model(
-      List<DepartureModel> self, SseSerializer serializer);
+  void sse_encode_list_departure(
+      List<Departure> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_u_8_strict(
@@ -126,15 +125,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       List<(String, String)> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_trip_model(
-      List<TripModel> self, SseSerializer serializer);
+  void sse_encode_list_trip(List<Trip> self, SseSerializer serializer);
 
   @protected
   void sse_encode_record_string_string(
       (String, String) self, SseSerializer serializer);
 
   @protected
-  void sse_encode_trip_model(TripModel self, SseSerializer serializer);
+  void sse_encode_trip(Trip self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_8(int self, SseSerializer serializer);
