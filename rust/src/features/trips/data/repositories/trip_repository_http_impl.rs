@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use chrono::{DateTime, Local, NaiveDateTime, NaiveTime};
+use chrono::{Local, NaiveTime};
 use futures::TryFutureExt;
 
 use crate::features::trips::domain::{
@@ -147,7 +147,8 @@ impl DepartureResponseModel {
                     )
                     .expect("Unable to parse time"),
                 )
-                .unwrap(),
+                .unwrap()
+                .to_utc(),
             is_next_day: self.next_day,
             is_time_based_on_gps: self.gps_time.is_some(),
         }
