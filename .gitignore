@@ -47,3 +47,5 @@ app.*.map.json
 .env
 coverage/lcov.info
 rust/Cargo.lock
+rust/android/app/src/main/jniLibs/arm64-v8a/librust_lib_b_stop.so
+rust/android/app/src/main/jniLibs/armeabi-v7a/librust_lib_b_stop.so
