@@ -1,4 +1,4 @@
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, Utc};
 
 #[derive(Debug)]
 pub struct Trip {
@@ -27,7 +27,7 @@ impl Trip {
 #[derive(Debug)]
 pub struct Departure {
     pub id: String,
-    pub time: DateTime<Local>,
+    pub time: DateTime<Utc>,
     pub is_next_day: bool,
     pub is_time_based_on_gps: bool,
 }
@@ -35,7 +35,7 @@ pub struct Departure {
 impl Departure {
     pub fn new(
         id: String,
-        time: DateTime<Local>,
+        time: DateTime<Utc>,
         is_next_day: bool,
         is_time_based_on_gps: bool,
     ) -> Self {

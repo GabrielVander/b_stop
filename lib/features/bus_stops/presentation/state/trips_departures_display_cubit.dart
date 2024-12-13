@@ -80,7 +80,7 @@ class DepartureViewModel extends Equatable {
 
   factory DepartureViewModel.fromEntity(Departure model) => DepartureViewModel(
         id: model.id,
-        time: DateFormat.jm().format(model.time),
+        time: DateFormat.jm().format(model.time.toLocal()),
         isNextDay: model.isNextDay,
         isAccurate: model.isTimeBasedOnGps,
       );
