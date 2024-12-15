@@ -18,41 +18,60 @@ class TripsModalBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: Column(
-        children: [
-          Text(title),
-          BlocBuilder<TripsDeparturesDisplayCubit, TripsDeparturesDisplayState>(
-            bloc: tripsDeparturesDisplayCubit..getTripsForStop(stopId),
-            builder: (context, state) {
-              return switch (state) {
-                TripsDeparturesDisplayLoadingState() => const CircularProgressIndicator.adaptive(),
-                TripsDeparturesDisplayFailureState(errorMessage: final errorMessage) =>
-                  Center(child: Text('Failed to retrieve data\n$errorMessage')),
-                TripsDeparturesDisplayEmptyState() => const Center(child: Text('No data')),
-                TripsDeparturesDisplayLoadedState(trips: final trips) => Expanded(
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      separatorBuilder: (context, index) => const SizedBox(height: 15),
-                      itemCount: trips.length,
-                      itemBuilder: (context, index) => Row(
-                        spacing: 20,
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(color: Colors.yellow),
-                            child: Text(trips[index].lineNumber),
-                          ),
-                          Text(trips[index].lineName),
-                          Text(trips[index].departures[0].time),
-                        ],
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: SizedBox(
+        height: height,
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 15),
+            BlocBuilder<TripsDeparturesDisplayCubit, TripsDeparturesDisplayState>(
+              bloc: tripsDeparturesDisplayCubit..getTripsForStop(stopId),
+              builder: (context, state) {
+                return switch (state) {
+                  TripsDeparturesDisplayLoadingState() => const CircularProgressIndicator.adaptive(),
+                  TripsDeparturesDisplayFailureState(errorMessage: final errorMessage) =>
+                    Center(child: Text('Failed to retrieve data\n$errorMessage')),
+                  TripsDeparturesDisplayEmptyState() => const Center(child: Text('No data')),
+                  TripsDeparturesDisplayLoadedState(trips: final trips) => Expanded(
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        separatorBuilder: (context, index) => const SizedBox(height: 15),
+                        itemCount: trips.length,
+                        itemBuilder: (context, index) => Row(
+                          spacing: 20,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.yellow,
+                                borderRadius: const BorderRadius.all(Radius.circular(3)),
+                                border: Border.all(width: 2),
+                              ),
+                              padding: const EdgeInsets.all(3),
+                              child: Text(trips[index].lineNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            Text(trips[index].lineName),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(trips[index].departures[0].time),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-              };
-            },
-          ),
-        ],
+                };
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
