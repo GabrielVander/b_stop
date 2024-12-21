@@ -59,25 +59,25 @@ class TripsDeparturesDisplayLoadedState extends TripsDeparturesDisplayState {
 class TripViewModel extends Equatable {
   const TripViewModel({
     required this.id,
-    required this.identifierText,
+    required this.lineIdentificationText,
     required this.displayText,
     required this.departures,
   });
 
   factory TripViewModel.fromEntity(Trip model) => TripViewModel(
         id: model.id,
-        identifierText: model.lineNumber,
+        lineIdentificationText: model.lineNumber,
         displayText: model.lineName,
         departures: model.departures.iter().map<DepartureViewModel>(DepartureViewModel.fromEntity).collectList(),
       );
 
   final String id;
-  final String identifierText;
+  final String lineIdentificationText;
   final String displayText;
   final List<DepartureViewModel> departures;
 
   @override
-  List<Object?> get props => [id, identifierText, displayText, departures];
+  List<Object?> get props => [id, lineIdentificationText, displayText, departures];
 }
 
 class DepartureViewModel extends Equatable {

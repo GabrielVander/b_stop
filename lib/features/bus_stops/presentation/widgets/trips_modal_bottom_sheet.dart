@@ -27,9 +27,9 @@ class TripsModalBottomSheet extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextTheme.of(context).titleMedium,
             ),
-            Divider(height: DividerTheme.of(context).space ?? 16 + 5.0),
+            Divider(height: (DividerTheme.of(context).space ?? 16) + 5),
             BlocBuilder<TripsDeparturesDisplayCubit, TripsDeparturesDisplayState>(
               bloc: tripsDeparturesDisplayCubit..getTripsForStop(stopId),
               builder: (context, state) {
@@ -44,7 +44,7 @@ class TripsModalBottomSheet extends StatelessWidget {
                         separatorBuilder: (context, index) => const SizedBox(height: 15),
                         itemCount: trips.length,
                         itemBuilder: (context, index) => Row(
-                          spacing: 20,
+                          spacing: 10,
                           children: [
                             Container(
                               decoration: BoxDecoration(
@@ -54,20 +54,20 @@ class TripsModalBottomSheet extends StatelessWidget {
                               ),
                               padding: const EdgeInsets.all(3),
                               child: Text(
-                                trips[index].identifierText,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                trips[index].lineIdentificationText,
+                                style: TextTheme.of(context).titleSmall,
                               ),
                             ),
                             Expanded(
                               child: Column(
-                                spacing: 10,
+                                spacing: 5,
                                 children: [
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         trips[index].displayText,
-                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                        style: TextTheme.of(context).titleSmall,
                                       ),
                                       Container(
                                         decoration: BoxDecoration(
@@ -75,7 +75,10 @@ class TripsModalBottomSheet extends StatelessWidget {
                                           border: Border.all(),
                                         ),
                                         padding: const EdgeInsets.all(3),
-                                        child: Text(trips[index].departures.first.timeText),
+                                        child: Text(
+                                          trips[index].departures.first.timeText,
+                                          style: TextTheme.of(context).bodySmall,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -91,7 +94,7 @@ class TripsModalBottomSheet extends StatelessWidget {
                                               borderRadius: const BorderRadius.all(Radius.circular(3)),
                                             ),
                                             padding: const EdgeInsets.all(3),
-                                            child: Text(d.timeText),
+                                            child: Text(d.timeText, style: TextTheme.of(context).bodySmall),
                                           ),
                                         )
                                         .toList(),
