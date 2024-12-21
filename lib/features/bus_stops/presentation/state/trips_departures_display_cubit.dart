@@ -57,39 +57,49 @@ class TripsDeparturesDisplayLoadedState extends TripsDeparturesDisplayState {
 }
 
 class TripViewModel extends Equatable {
-  const TripViewModel({required this.id, required this.lineNumber, required this.lineName, required this.departures});
+  const TripViewModel({
+    required this.id,
+    required this.identifierText,
+    required this.displayText,
+    required this.departures,
+  });
 
   factory TripViewModel.fromEntity(Trip model) => TripViewModel(
         id: model.id,
-        lineNumber: model.lineNumber,
-        lineName: model.lineName,
+        identifierText: model.lineNumber,
+        displayText: model.lineName,
         departures: model.departures.iter().map<DepartureViewModel>(DepartureViewModel.fromEntity).collectList(),
       );
 
   final String id;
-  final String lineNumber;
-  final String lineName;
+  final String identifierText;
+  final String displayText;
   final List<DepartureViewModel> departures;
 
   @override
-  List<Object?> get props => [id, lineNumber, lineName, departures];
+  List<Object?> get props => [id, identifierText, displayText, departures];
 }
 
 class DepartureViewModel extends Equatable {
-  const DepartureViewModel({required this.id, required this.time, required this.isNextDay, required this.isAccurate});
+  const DepartureViewModel({
+    required this.id,
+    required this.timeText,
+    required this.shouldBeDisabled,
+    required this.shouldBeHighlighted,
+  });
 
   factory DepartureViewModel.fromEntity(Departure model) => DepartureViewModel(
         id: model.id,
-        time: DateFormat.jm().format(model.time.toLocal()),
-        isNextDay: model.isNextDay,
-        isAccurate: model.isTimeBasedOnGps,
+        timeText: DateFormat.jm().format(model.time.toLocal()),
+        shouldBeDisabled: model.isNextDay,
+        shouldBeHighlighted: model.isTimeBasedOnGps,
       );
 
   final String id;
-  final String time;
-  final bool isNextDay;
-  final bool isAccurate;
+  final String timeText;
+  final bool shouldBeDisabled;
+  final bool shouldBeHighlighted;
 
   @override
-  List<Object?> get props => [id, time, isNextDay, isAccurate];
+  List<Object?> get props => [id, timeText, shouldBeDisabled, shouldBeHighlighted];
 }

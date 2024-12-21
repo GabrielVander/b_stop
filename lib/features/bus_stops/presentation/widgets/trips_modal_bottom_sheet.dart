@@ -52,14 +52,17 @@ class TripsModalBottomSheet extends StatelessWidget {
                                 border: Border.all(width: 2),
                               ),
                               padding: const EdgeInsets.all(3),
-                              child: Text(trips[index].lineNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              child: Text(
+                                trips[index].identifierText,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
                             ),
-                            Text(trips[index].lineName),
+                            Text(trips[index].displayText),
                             Expanded(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  Text(trips[index].departures[0].time),
+                                  Text(trips[index].departures[0].timeText),
                                 ],
                               ),
                             ),
