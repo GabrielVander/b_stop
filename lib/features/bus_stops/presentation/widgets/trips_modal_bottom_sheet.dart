@@ -29,7 +29,7 @@ class TripsModalBottomSheet extends StatelessWidget {
               title,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 15),
+            Divider(height: DividerTheme.of(context).space ?? 16 + 5.0),
             BlocBuilder<TripsDeparturesDisplayCubit, TripsDeparturesDisplayState>(
               bloc: tripsDeparturesDisplayCubit..getTripsForStop(stopId),
               builder: (context, state) {
@@ -60,12 +60,23 @@ class TripsModalBottomSheet extends StatelessWidget {
                             ),
                             Expanded(
                               child: Column(
+                                spacing: 10,
                                 children: [
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(trips[index].displayText),
-                                      Text(trips[index].departures.first.timeText),
+                                      Text(
+                                        trips[index].displayText,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.all(Radius.circular(3)),
+                                          border: Border.all(),
+                                        ),
+                                        padding: const EdgeInsets.all(3),
+                                        child: Text(trips[index].departures.first.timeText),
+                                      ),
                                     ],
                                   ),
                                   Row(
