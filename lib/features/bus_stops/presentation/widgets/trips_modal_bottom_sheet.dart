@@ -71,13 +71,18 @@ class TripsModalBottomSheet extends StatelessWidget {
                                       ),
                                       Container(
                                         decoration: BoxDecoration(
+                                          color: trips[index].nextDeparture.getBackgroundColor(context),
                                           borderRadius: const BorderRadius.all(Radius.circular(3)),
-                                          border: Border.all(),
+                                          border: Border.all(
+                                            color: trips[index].nextDeparture.getTextColor(context) ?? Colors.black,
+                                          ),
                                         ),
                                         padding: const EdgeInsets.all(3),
                                         child: Text(
-                                          trips[index].departures.first.timeText,
-                                          style: TextTheme.of(context).bodySmall,
+                                          trips[index].nextDeparture.timeText,
+                                          style: TextTheme.of(context)
+                                              .bodySmall
+                                              ?.copyWith(color: trips[index].nextDeparture.getTextColor(context)),
                                         ),
                                       ),
                                     ],
@@ -88,13 +93,20 @@ class TripsModalBottomSheet extends StatelessWidget {
                                         .departures
                                         .slice(1)
                                         .map(
-                                          (d) => Container(
+                                          (departure) => Container(
                                             decoration: BoxDecoration(
-                                              color: d.shouldBeDisabled ? Colors.grey : Colors.black12,
+                                              color: departure.getBackgroundColor(context),
                                               borderRadius: const BorderRadius.all(Radius.circular(3)),
+                                              border:
+                                                  Border.all(color: departure.getTextColor(context) ?? Colors.black),
                                             ),
                                             padding: const EdgeInsets.all(3),
-                                            child: Text(d.timeText, style: TextTheme.of(context).bodySmall),
+                                            child: Text(
+                                              departure.timeText,
+                                              style: TextTheme.of(context)
+                                                  .bodySmall
+                                                  ?.copyWith(color: departure.getTextColor(context)),
+                                            ),
                                           ),
                                         )
                                         .toList(),

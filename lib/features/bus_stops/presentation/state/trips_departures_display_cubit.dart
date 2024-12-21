@@ -1,6 +1,7 @@
 import 'package:b_stop/src/rust/api/trips.dart';
 import 'package:b_stop/src/rust/features/trips/domain/entities/trip.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:rust_core/rust_core.dart';
@@ -61,6 +62,7 @@ class TripViewModel extends Equatable {
     required this.id,
     required this.lineIdentificationText,
     required this.displayText,
+    required this.nextDeparture,
     required this.departures,
   });
 
@@ -68,12 +70,14 @@ class TripViewModel extends Equatable {
         id: model.id,
         lineIdentificationText: model.lineNumber,
         displayText: model.lineName,
-        departures: model.departures.iter().map<DepartureViewModel>(DepartureViewModel.fromEntity).collectList(),
+        nextDeparture: DepartureViewModel.fromEntity(model.departures.first, isNext: true),
+        departures: model.departures.slice(1).map<DepartureViewModel>(DepartureViewModel.fromEntity).collectList(),
       );
 
   final String id;
   final String lineIdentificationText;
   final String displayText;
+  final DepartureViewModel nextDeparture;
   final List<DepartureViewModel> departures;
 
   @override
@@ -84,22 +88,41 @@ class DepartureViewModel extends Equatable {
   const DepartureViewModel({
     required this.id,
     required this.timeText,
-    required this.shouldBeDisabled,
-    required this.shouldBeHighlighted,
+    required this.isNext,
+    required this.isForNextDay,
+    required this.isAccurate,
   });
 
-  factory DepartureViewModel.fromEntity(Departure model) => DepartureViewModel(
+  factory DepartureViewModel.fromEntity(Departure model, {bool isNext = false}) => DepartureViewModel(
         id: model.id,
         timeText: DateFormat.jm().format(model.time.toLocal()),
-        shouldBeDisabled: model.isNextDay,
-        shouldBeHighlighted: model.isTimeBasedOnGps,
+        isNext: isNext,
+        isForNextDay: model.isNextDay,
+        isAccurate: model.isTimeBasedOnGps,
       );
 
   final String id;
   final String timeText;
-  final bool shouldBeDisabled;
-  final bool shouldBeHighlighted;
+  final bool isNext;
+  final bool isForNextDay;
+  final bool isAccurate;
 
   @override
-  List<Object?> get props => [id, timeText, shouldBeDisabled, shouldBeHighlighted];
+  List<Object?> get props => [id, timeText, isForNextDay, isAccurate];
+
+  Color? getBackgroundColor(BuildContext context) {
+    if (isAccurate) {
+      return isForNextDay ? Colors.green : Colors.lightGreen;
+    }
+
+    return isForNextDay ? Colors.grey : Colors.black12;
+  }
+
+  Color? getTextColor(BuildContext context) {
+    if (isAccurate) {
+      return isForNextDay ? Colors.white : Colors.black;
+    }
+
+    return TextTheme.of(context).titleSmall?.color;
+  }
 }
