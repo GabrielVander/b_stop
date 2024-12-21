@@ -1,6 +1,7 @@
 import 'package:b_stop/features/bus_stops/presentation/state/trips_departures_display_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rust_core/rust_core.dart';
 
 class TripsModalBottomSheet extends StatelessWidget {
   const TripsModalBottomSheet({
@@ -57,12 +58,33 @@ class TripsModalBottomSheet extends StatelessWidget {
                                 style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
-                            Text(trips[index].displayText),
                             Expanded(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                              child: Column(
                                 children: [
-                                  Text(trips[index].departures[0].timeText),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(trips[index].displayText),
+                                      Text(trips[index].departures.first.timeText),
+                                    ],
+                                  ),
+                                  Row(
+                                    spacing: 10,
+                                    children: trips[index]
+                                        .departures
+                                        .slice(1)
+                                        .map(
+                                          (d) => Container(
+                                            decoration: BoxDecoration(
+                                              color: d.shouldBeDisabled ? Colors.grey : Colors.black12,
+                                              borderRadius: const BorderRadius.all(Radius.circular(3)),
+                                            ),
+                                            padding: const EdgeInsets.all(3),
+                                            child: Text(d.timeText),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
                                 ],
                               ),
                             ),
