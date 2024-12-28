@@ -91,7 +91,6 @@ class TripsModalBottomSheet extends StatelessWidget {
                                     spacing: 10,
                                     children: trips[index]
                                         .departures
-                                        .slice(1)
                                         .map(
                                           (departure) => Container(
                                             decoration: BoxDecoration(
