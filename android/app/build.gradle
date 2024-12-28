@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.b_stop"
+    namespace = "gabriel.guimaraes.b_stop"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,8 +20,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.b_stop"
+        // Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "gabriel.guimaraes.b_stop"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -39,24 +39,24 @@ android {
     }
 }
 
-[
-        new Tuple2('Debug', 'debug'),
-        new Tuple2('Profile', 'release'),
-        new Tuple2('Release', 'release')
-].each {
-    def taskPostfix = it.first
-    def profileMode = it.second
-    tasks.whenTaskAdded { task ->
-        if (task.name == "javaPreCompile$taskPostfix") {
-            println "hello let ${task.name} dependsOn cargoBuild$taskPostfix"
-            task.dependsOn "cargoBuild$taskPostfix"
-        }
-    }
-    tasks.register("cargoBuild$taskPostfix", Exec) {
-        println "hello executing doLast for task cargoBuild$taskPostfix"
-        commandLine 'sh', '-c', "cd .. && cd .. && cd rust && cargo ndk -o android/app/src/main/jniLibs build"
-    }
-}
+// [
+//         new Tuple2('Debug', 'debug'),
+//         new Tuple2('Profile', 'release'),
+//         new Tuple2('Release', 'release')
+// ].each {
+//     def taskPostfix = it.first
+//     def profileMode = it.second
+//     tasks.whenTaskAdded { task ->
+//         if (task.name == "javaPreCompile$taskPostfix") {
+//             println "hello let ${task.name} dependsOn cargoBuild$taskPostfix"
+//             task.dependsOn "cargoBuild$taskPostfix"
+//         }
+//     }
+//     tasks.register("cargoBuild$taskPostfix", Exec) {
+//         println "hello executing doLast for task cargoBuild$taskPostfix"
+//         commandLine 'sh', '-c', "cd .. && cd .. && cd rust && cargo ndk -o android/app/src/main/jniLibs build"
+//     }
+// }
 
 flutter {
     source = "../.."
