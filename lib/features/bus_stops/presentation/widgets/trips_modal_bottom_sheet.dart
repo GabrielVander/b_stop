@@ -1,7 +1,6 @@
 import 'package:b_stop/features/bus_stops/presentation/state/trips_departures_display_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rust_core/rust_core.dart';
 
 class TripsModalBottomSheet extends StatelessWidget {
   const TripsModalBottomSheet({
@@ -29,7 +28,7 @@ class TripsModalBottomSheet extends StatelessWidget {
               title,
               style: TextTheme.of(context).titleMedium,
             ),
-            Divider(height: (DividerTheme.of(context).space ?? 16) + 5),
+            const SizedBox(height: 25),
             BlocBuilder<TripsDeparturesDisplayCubit, TripsDeparturesDisplayState>(
               bloc: tripsDeparturesDisplayCubit..getTripsForStop(stopId),
               builder: (context, state) {
@@ -41,7 +40,7 @@ class TripsModalBottomSheet extends StatelessWidget {
                   TripsDeparturesDisplayLoadedState(trips: final trips) => Expanded(
                       child: ListView.separated(
                         shrinkWrap: true,
-                        separatorBuilder: (context, index) => const SizedBox(height: 15),
+                        separatorBuilder: (context, index) => const Divider(height: 25),
                         itemCount: trips.length,
                         itemBuilder: (context, index) => Row(
                           spacing: 10,
