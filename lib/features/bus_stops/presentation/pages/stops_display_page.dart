@@ -91,6 +91,7 @@ class _MapDisplay extends StatelessWidget {
         MarkerClusterLayerWidget(
           options: MarkerClusterLayerOptions(
             rotate: true,
+            showPolygon: false,
             markers: stops
                 .map(
                   (stop) => Marker(
