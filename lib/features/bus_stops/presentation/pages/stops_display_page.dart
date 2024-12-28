@@ -85,6 +85,7 @@ class _MapDisplay extends StatelessWidget {
       options: const MapOptions(initialCenter: LatLng(-22.012, -47.891)),
       children: [
         TileLayer(
+          userAgentPackageName: 'gabriel.guimaraes.b_stop',
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         ),
         MarkerClusterLayerWidget(
